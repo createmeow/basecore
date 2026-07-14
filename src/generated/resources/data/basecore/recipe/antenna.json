@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "E": {
+      "item": "basecore:electronic_component"
+    },
+    "I": {
+      "item": "basecore:wire"
+    },
+    "i": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "pattern": [
+    " i ",
+    "EiE",
+    " I "
+  ],
+  "result": {
+    "count": 1,
+    "id": "basecore:antenna"
+  }
+}

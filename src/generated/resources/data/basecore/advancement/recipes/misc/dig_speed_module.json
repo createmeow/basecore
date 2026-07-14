@@ -1,0 +1,37 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "basecore:component_mode_disabled"
+    }
+  ],
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_refined_chip": {
+      "conditions": {
+        "items": [
+          {
+            "items": "basecore:refined_chip"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "basecore:dig_speed_module"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_refined_chip"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "basecore:dig_speed_module"
+    ]
+  }
+}

@@ -1,0 +1,32 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "#SG",
+        "LLL",
+        "CSD"
+    ],
+    "key": {
+        "#": {
+            "item": "minecraft:iron_block"
+        },
+        "S": {
+            "item": "basecore:wire"
+        },
+        "G": {
+            "item": "minecraft:gold_block"
+        },
+        "L": {
+            "item": "basecore:chip"
+        },
+        "C": {
+            "item": "minecraft:copper_block"
+        },
+        "D": {
+            "item": "minecraft:diamond_block"
+        }
+    },
+    "result": {
+        "item": "basecore:refined_chip", 
+        "count": 1
+    }
+}

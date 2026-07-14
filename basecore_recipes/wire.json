@@ -1,0 +1,20 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "###",
+        "ccc",
+        "###"
+    ],
+    "key": {
+        "#": {
+            "item": "minecraft:leather"
+        },
+        "c": {
+            "item": "basecore:copper_wire"
+        }
+    },
+    "result": {
+        "item": "basecore:wire",
+        "count": 1
+    }
+}

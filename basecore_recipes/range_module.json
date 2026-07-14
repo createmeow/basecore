@@ -1,0 +1,26 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "SSS",
+        "SCS",
+        "OAO"
+    ],
+    "key": {
+        "S": {
+            "item": "cm_basecore:electroniccomponent"
+        },
+        "C": {
+            "item": "cm_basecore:modulesubstrate"
+        },
+        "O": {
+            "item": "cm_basecore:chip"
+        },
+        "A": {
+            "item": "cm_basecore:refinedchip"
+        }
+    },
+    "result": {
+        "item": "basecore:range_module",
+        "count": 1
+    }
+}

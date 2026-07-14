@@ -1,0 +1,39 @@
+[041月2026 21:45:11.348] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgedatauserdev, --assetIndex, 5, --assetsDir, C:\Users\AM\.gradle\caches\forge_gradle\assets, --gameDir, ., --fml.forgeVersion, 47.2.20, --fml.mcVersion, 1.20.1, --fml.forgeGroup, net.minecraftforge, --fml.mcpVersion, 20230612.114412, --mod, basecore, --all, --output, D:\AM\AMDev\minecraft\other\BaseCore-1.20.1-47.2.20\src\generated\resources, --existing, D:\AM\AMDev\minecraft\other\BaseCore-1.20.1-47.2.20\src\main\resources, --mixin.config, mixins.basecore.json]
+[041月2026 21:45:11.354] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher 10.0.9+10.0.9+main.dcd20f30 starting: java version 17.0.15 by Microsoft; OS Windows 11 arch amd64 version 10.0
+[041月2026 21:45:11.495] [main/INFO] [net.minecraftforge.fml.loading.ImmediateWindowHandler/]: ImmediateWindowProvider not loading because launch target is forgedatauserdev
+[041月2026 21:45:11.559] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.5 Source=union:/C:/Users/AM/.gradle/caches/modules-2/files-2.1/org.spongepowered/mixin/0.8.5/9d1c0c3a304ae6697ecd477218fa61b850bf57fc/mixin-0.8.5.jar%23128!/ Service=ModLauncher Env=CLIENT
+[041月2026 21:45:12.102] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\AM\.gradle\caches\modules-2\files-2.1\net.minecraftforge\javafmllanguage\1.20.1-47.2.20\918959a037ab7191a0c45a359f4746ab76c110c3\javafmllanguage-1.20.1-47.2.20.jar is missing mods.toml file
+[041月2026 21:45:12.106] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\AM\.gradle\caches\modules-2\files-2.1\net.minecraftforge\lowcodelanguage\1.20.1-47.2.20\c1d1efcb98e8bfcf3dbfed0d1e81b55b648b86bf\lowcodelanguage-1.20.1-47.2.20.jar is missing mods.toml file
+[041月2026 21:45:12.110] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\AM\.gradle\caches\modules-2\files-2.1\net.minecraftforge\mclanguage\1.20.1-47.2.20\efca3bee89c0085192b122d47334692b921ca7d1\mclanguage-1.20.1-47.2.20.jar is missing mods.toml file
+[041月2026 21:45:12.116] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\AM\.gradle\caches\modules-2\files-2.1\net.minecraftforge\fmlcore\1.20.1-47.2.20\12cd436f148405b50c9b16bd8f3cc6f18db89824\fmlcore-1.20.1-47.2.20.jar is missing mods.toml file
+[041月2026 21:45:12.211] [main/INFO] [net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator/]: No dependencies to load found. Skipping!
+[041月2026 21:45:14.083] [main/WARN] [mixin/]: Compatibility level JAVA_17 specified by mixins.basecore.json is higher than the maximum level supported by this version of mixin (JAVA_13).
+[041月2026 21:45:14.084] [main/INFO] [mixin/]: Compatibility level set to JAVA_17
+[041月2026 21:45:14.088] [main/INFO] [cpw.mods.modlauncher.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgedatauserdev' with arguments [--gameDir, ., --assetsDir, C:\Users\AM\.gradle\caches\forge_gradle\assets, --assetIndex, 5, --mod, basecore, --all, --output, D:\AM\AMDev\minecraft\other\BaseCore-1.20.1-47.2.20\src\generated\resources, --existing, D:\AM\AMDev\minecraft\other\BaseCore-1.20.1-47.2.20\src\main\resources]
+[041月2026 21:45:14.184] [main/INFO] [mixin/]: Attempting to load Fernflower decompiler (Threaded mode)
+[041月2026 21:45:14.186] [main/INFO] [mixin/]: Fernflower could not be loaded, exported classes will not be decompiled. NoClassDefFoundError: org/jetbrains/java/decompiler/main/extern/IResultSaver
+[041月2026 21:45:14.195] [main/INFO] [mixin/]: Preparing mixins for MixinEnvironment[DEFAULT]
+[041月2026 21:45:14.196] [main/INFO] [mixin/]: Selecting config mixins.basecore.json
+[041月2026 21:45:14.200] [main/WARN] [mixin/]: Reference map 'refmap.basecore.json' for mixins.basecore.json could not be read. If this is a development environment you can ignore this message
+[041月2026 21:45:14.202] [main/INFO] [mixin/]: Preparing mixins.basecore.json (2)
+[041月2026 21:45:14.772] [main/INFO] [net.minecraftforge.data.loading.DatagenModLoader/]: Initializing Data Gatherer for mods [basecore]
+[041月2026 21:45:15.360] [main/INFO] [mixin/]: Mixing ArgumentTypeInfosMixin from mixins.basecore.json into net.minecraft.commands.synchronization.ArgumentTypeInfos
+[041月2026 21:45:19.450] [main/INFO] [mixin/]: Mixing ServerPlayerMixin from mixins.basecore.json into net.minecraft.server.level.ServerPlayer
+[041月2026 21:45:21.537] [modloading-worker-0/INFO] [net.minecraftforge.common.ForgeMod/FORGEMOD]: Forge mod loading, version 47.2.20, for MC 1.20.1 with MCP 20230612.114412
+[041月2026 21:45:21.540] [modloading-worker-0/INFO] [net.minecraftforge.common.MinecraftForge/FORGE]: MinecraftForge v47.2.20 Initialized
+[041月2026 21:45:22.485] [main/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/C:/Users/AM/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.2.20_mapped_parchment_2023.09.03-1.20.1/forge-1.20.1-47.2.20_mapped_parchment_2023.09.03-1.20.1-recomp.jar%23191!/assets/.mcassetsroot' uses unexpected schema
+[041月2026 21:45:22.486] [main/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/C:/Users/AM/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.2.20_mapped_parchment_2023.09.03-1.20.1/forge-1.20.1-47.2.20_mapped_parchment_2023.09.03-1.20.1-recomp.jar%23191!/data/.mcassetsroot' uses unexpected schema
+[041月2026 21:45:22.726] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Recipes
+[041月2026 21:45:22.730] [main/INFO] [net.minecraft.data.DataGenerator/]: Recipes finished after 3 ms
+[041月2026 21:45:22.730] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Loot Tables
+[041月2026 21:45:22.820] [main/INFO] [net.minecraft.data.DataGenerator/]: Loot Tables finished after 88 ms
+[041月2026 21:45:22.820] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Block States: basecore
+[041月2026 21:45:23.108] [main/INFO] [net.minecraft.data.DataGenerator/]: Block States: basecore finished after 288 ms
+[041月2026 21:45:23.108] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Item Models: basecore
+[041月2026 21:45:23.126] [main/INFO] [net.minecraft.data.DataGenerator/]: Item Models: basecore finished after 16 ms
+[041月2026 21:45:23.126] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Tags for minecraft:block mod id basecore
+[041月2026 21:45:23.141] [main/INFO] [net.minecraft.data.DataGenerator/]: Tags for minecraft:block mod id basecore finished after 16 ms
+[041月2026 21:45:23.142] [main/INFO] [net.minecraft.data.DataGenerator/]: Starting provider: Tags for minecraft:item mod id basecore
+[041月2026 21:45:23.143] [main/INFO] [net.minecraft.data.DataGenerator/]: Tags for minecraft:item mod id basecore finished after 1 ms
+[041月2026 21:45:23.143] [main/INFO] [net.minecraft.data.DataGenerator/]: All providers took: 418 ms
+[041月2026 21:45:23.153] [main/INFO] [net.minecraft.data.HashCache/]: Caching: total files: 46, old count: 45, new count: 46, removed stale: 1, written: 1

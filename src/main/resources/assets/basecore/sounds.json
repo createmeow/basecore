@@ -1,0 +1,11 @@
+{
+  "explode": {
+    "category": "neutral",
+    "sounds": [
+      {
+        "name": "cm_basecore:explode1",
+        "stream": false
+      }
+    ]
+  }
+}

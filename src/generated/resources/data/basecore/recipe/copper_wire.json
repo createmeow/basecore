@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "c": {
+      "item": "minecraft:copper_ingot"
+    }
+  },
+  "pattern": [
+    "   ",
+    "ccc",
+    "   "
+  ],
+  "result": {
+    "count": 9,
+    "id": "basecore:copper_wire"
+  }
+}

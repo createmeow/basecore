@@ -1,0 +1,76 @@
+{
+  "create_tab.basecore.all": "基地核心",
+
+  "block.basecore.basecore": "§d基地核心",
+  "block.basecore.defend": "§d防御炮",
+  "block.basecore.damage": "损坏器械",
+
+  "item.basecore.electronic_component": "电子元件",
+  "item.basecore.chip": "简单芯片",
+  "item.basecore.refined_chip": "精制芯片",
+  "item.basecore.wire": "电线",
+  "item.basecore.antenna": "天线",
+  "item.basecore.copper_wire": "铜丝",
+  "item.basecore.module_substrate": "模块基底",
+
+  "item.basecore.range_module": "范围提升模块",
+  "item.basecore.secure_module": "安全模块",
+  "item.basecore.def_module": "防御模块",
+  "item.basecore.exp_def_module": "爆炸保护模块",
+  "item.basecore.auto_repair_module": "自动修复模块",
+  "item.basecore.thorns_module": "荆棘模块",
+  "item.basecore.strength_module": "伤害提升模块",
+
+  "item.basecore.jump_boost_module": "跳跃提升模块",
+  "item.basecore.regeneration_module": "生命回复模块",
+  "item.basecore.resistance_module": "抗性提升模块",
+  "item.basecore.dig_speed_module": "挖掘速度提升模块",
+  "item.basecore.movement_speed_module": "移动速度提升模块",
+  "item.basecore.dig_slowdown_module": "挖掘疲劳模块",
+  "item.basecore.weakness_module": "虚弱模块",
+  "item.basecore.movement_slowdown_module": "缓慢模块",
+  "item.basecore.basecore_counter_reconnaissance_module": "基地核心反侦察模块",
+
+  "item.basecore.protection_signal_shield": "保护信号屏蔽器",
+  "item.basecore.prosthodontic": "修复器",
+
+  "item.basecore.defend_health_module": "防御炮血量提升模块",
+  "item.basecore.defend_damage_module": "防御炮伤害增强模块",
+  "item.basecore.disguise": "伪装器",
+  "item.basecore.advanced_disguise_device": "高强伪装器",
+  "item.basecore.extreme_disguise_device": "极端伪装器",
+
+
+  "effect.basecore.disguise": "伪装",
+
+
+
+  "tooltip.basecore.basecore.range": "范围 : %s",
+  "tooltip.basecore.basecore.no_owner": "无持有人",
+  "tooltip.basecore.basecore.health": "生命值 : %s",
+  "tooltip.basecore.basecore.owner": "属于你",
+  "tooltip.basecore.basecore.not_owner": "不属于你",
+
+  "error.basecore.permission.right_click_block": "§4无权限操作",
+  "error.basecore.permission.left_click_block": "§4无权限操作",
+  "error.basecore.permission.open_menu": "§4无权限打开",
+  "error.basecore.permission.range_has_basecore": "§4与其他基地核心过近",
+  "error.basecore.pssi.no_basecore": "未在基地核心作用区域内",
+  "error.basecore.pssi.has_permission": "此基地为您或其已将您添加为成员",
+  "error.basecore.pssi.interfered": "已被干扰过",
+  "error.basecore.prosthodontic.health_full": "生命值满",
+  "gui.basecore.basecore.interference": "已被入侵，剩余时间 : %s",
+
+  "block.basecore.hash_chest": "加密容器",
+
+  "block_entity.basecore.defend.type.1": "攻击类型：敌对生物",
+  "block_entity.basecore.defend.type.2": "攻击类型：玩家",
+  "block_entity.basecore.defend.type.3": "攻击类型：所有",
+  "block_entity.basecore.hash_chest.type.0": "权限：自己",
+  "block_entity.basecore.hash_chest.type.1": "权限：成员",
+  "block_entity.basecore.hash_chest.type.2": "权限：所有人",
+  "item.basecore.electromagnetic_pulse_bomb": "电磁脉冲炸弹",
+
+
+  "basecore.basecore.discern": "附近的基地核心已识破你的伪装"
+}

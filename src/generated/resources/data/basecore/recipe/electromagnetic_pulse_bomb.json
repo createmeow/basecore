@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "basecore:antenna"
+    },
+    "E": {
+      "item": "basecore:electronic_component"
+    },
+    "G": {
+      "item": "minecraft:gunpowder"
+    }
+  },
+  "pattern": [
+    "GGG",
+    "GEG",
+    "GAG"
+  ],
+  "result": {
+    "count": 1,
+    "id": "basecore:electromagnetic_pulse_bomb"
+  }
+}

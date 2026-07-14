@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "/": {
+      "item": "basecore:wire"
+    },
+    "D": {
+      "item": "basecore:chip"
+    }
+  },
+  "pattern": [
+    "///",
+    "/D/",
+    "///"
+  ],
+  "result": {
+    "count": 1,
+    "id": "basecore:electronic_component"
+  }
+}

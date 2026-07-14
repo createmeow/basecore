@@ -1,0 +1,29 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "###",
+        "SCS",
+        "OAO"
+    ],
+    "key": {
+        "#": {
+            "item": "basecore:wire"
+        },
+        "S": {
+            "item": "basecore:electronic_component"
+        },
+        "C": {
+            "item": "basecore:module_substrate"
+        },
+        "O": {
+            "item": "minecraft:rabbit_foot"
+        },
+        "A": {
+            "item": "basecore:chip"
+        }
+    },
+    "result": {
+        "item": "basecore:jump_boost_module",
+        "count": 1
+    }
+}

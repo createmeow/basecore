@@ -1,0 +1,29 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "#/i",
+        "SES",
+        "SSS"
+    ],
+    "key": {
+        "#": {
+            "item": "minecraft:diamond"
+        },
+        "/": {
+            "item": "basecore:antenna"
+        },
+        "i": {
+            "item": "minecraft:iron_ingot"
+        },
+        "S": {
+            "item": "basecore:electronic_component"
+        },
+        "E": {
+            "item": "basecore:refined_chip"
+        }
+    },
+    "result": {
+        "item": "basecore:defend",
+        "count": 1
+    }
+}

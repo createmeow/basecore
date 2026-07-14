@@ -1,0 +1,29 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "###",
+        "SCS",
+        "OAO"
+    ],
+    "key": {
+        "#": {
+            "item": "basecore:wire"
+        },
+        "S": {
+            "item": "basecore:electronic_component"
+        },
+        "C": {
+            "item": "basecore:module_substrate"
+        },
+        "O": {
+            "item": "minecraft:obsidian"
+        },
+        "A": {
+            "item": "basecore:refined_chip"
+        }
+    },
+    "result": {
+        "item": "basecore:secure_module",
+        "count": 1
+    }
+}

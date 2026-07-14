@@ -1,0 +1,25 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "basecore:component_mode_disabled"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "basecore:antenna"
+    },
+    "S": {
+      "item": "basecore:module_substrate"
+    }
+  },
+  "pattern": [
+    "A",
+    "S"
+  ],
+  "result": {
+    "count": 1,
+    "id": "basecore:movement_speed_module"
+  }
+}

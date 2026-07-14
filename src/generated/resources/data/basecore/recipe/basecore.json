@@ -1,0 +1,36 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "D": {
+      "item": "minecraft:diamond_block"
+    },
+    "E": {
+      "item": "basecore:electronic_component"
+    },
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "R": {
+      "item": "basecore:refined_chip"
+    },
+    "c": {
+      "item": "basecore:chip"
+    },
+    "i": {
+      "item": "minecraft:iron_ingot"
+    },
+    "r": {
+      "item": "minecraft:redstone"
+    }
+  },
+  "pattern": [
+    "iGi",
+    "EcR",
+    "DrD"
+  ],
+  "result": {
+    "count": 1,
+    "id": "basecore:basecore"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "E": {
+      "item": "basecore:electronic_component"
+    },
+    "H": {
+      "item": "minecraft:leather_helmet"
+    }
+  },
+  "pattern": [
+    "EEE",
+    "EHE",
+    "   "
+  ],
+  "result": {
+    "count": 1,
+    "id": "basecore:disguise"
+  }
+}

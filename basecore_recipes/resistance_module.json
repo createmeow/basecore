@@ -1,0 +1,29 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "###",
+        "SCS",
+        "OAO"
+    ],
+    "key": {
+        "#": {
+            "item": "basecore:wire"
+        },
+        "S": {
+            "item": "basecore:electronic_component"
+        },
+        "C": {
+            "item": "basecore:module_substrate"
+        },
+        "O": {
+            "item": "minecraft:diamond_chestplate"
+        },
+        "A": {
+            "item": "basecore:refined_chip" 
+        }
+    },
+    "result": {
+        "item": "basecore:resistance_module",
+        "count": 1
+    }
+}

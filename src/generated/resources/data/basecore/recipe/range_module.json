@@ -1,0 +1,32 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "basecore:component_mode_disabled"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "basecore:refined_chip"
+    },
+    "C": {
+      "item": "basecore:module_substrate"
+    },
+    "O": {
+      "item": "basecore:chip"
+    },
+    "S": {
+      "item": "basecore:electronic_component"
+    }
+  },
+  "pattern": [
+    "SSS",
+    "SCS",
+    "OAO"
+  ],
+  "result": {
+    "count": 1,
+    "id": "basecore:range_module"
+  }
+}

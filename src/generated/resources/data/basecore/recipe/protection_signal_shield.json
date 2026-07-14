@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "basecore:antenna"
+    },
+    "R": {
+      "item": "basecore:refined_chip"
+    },
+    "S": {
+      "item": "basecore:module_substrate"
+    }
+  },
+  "pattern": [
+    " R ",
+    "ASA",
+    " R "
+  ],
+  "result": {
+    "count": 1,
+    "id": "basecore:protection_signal_shield"
+  }
+}

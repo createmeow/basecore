@@ -1,0 +1,37 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "basecore:component_mode_disabled"
+    }
+  ],
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_regeneration_module": {
+      "conditions": {
+        "items": [
+          {
+            "items": "basecore:regeneration_module"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "basecore:auto_repair_module"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_regeneration_module"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "basecore:auto_repair_module"
+    ]
+  }
+}

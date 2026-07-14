@@ -1,0 +1,35 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "basecore:component_mode_disabled"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "minecraft:copper_ingot"
+    },
+    "A": {
+      "item": "basecore:antenna"
+    },
+    "C": {
+      "item": "basecore:refined_chip"
+    },
+    "I": {
+      "item": "basecore:electronic_component"
+    },
+    "S": {
+      "item": "basecore:regeneration_module"
+    }
+  },
+  "pattern": [
+    "###",
+    "SCS",
+    "IAI"
+  ],
+  "result": {
+    "count": 1,
+    "id": "basecore:auto_repair_module"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "basecore:wire"
+    },
+    "S": {
+      "item": "basecore:chip"
+    },
+    "c": {
+      "item": "basecore:copper_wire"
+    },
+    "i": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "pattern": [
+    "###",
+    "iSi",
+    "ccc"
+  ],
+  "result": {
+    "count": 1,
+    "id": "basecore:module_substrate"
+  }
+}

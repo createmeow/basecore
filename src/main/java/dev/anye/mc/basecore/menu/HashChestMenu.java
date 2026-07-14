@@ -1,0 +1,89 @@
+package dev.anye.mc.basecore.menu;
+
+import com.mojang.logging.LogUtils;
+import dev.anye.mc.basecore.block.BlockRegister;
+import dev.anye.mc.basecore.block.entity.HashChestBlockEntity;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
+import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+
+public class HashChestMenu extends AbstractContainerMenu {
+    private static final Logger LOGGER = LogUtils.getLogger();
+    private HashChestBlockEntity blockEntity;
+    public HashChestMenu(int pContainerId, Inventory inventory , FriendlyByteBuf ex) {
+        this(pContainerId,inventory, inventory.player.level().getBlockEntity(ex.readBlockPos()));
+    }
+    public HashChestMenu(int cid, Inventory inv, BlockEntity ent){
+        super(MenuTypeRegister.HashChest.get(), cid);
+        if (ent instanceof HashChestBlockEntity hashChestBlockEntity) {
+            this.blockEntity = hashChestBlockEntity;
+            addPlayerInventory(inv, 8, 140, 18);
+            addPlayerHotBar(inv, 8, 198, 18);
+
+            ItemStackHandler itemHandlerHelper = hashChestBlockEntity.getItems();
+            int x = 0, y = 0;
+            for (int i = 0;i<itemHandlerHelper.getSlots();i++ ) {
+                if (y >= 9) {
+                    x++;
+                    y = 0;
+                }
+                this.addSlot(new SlotItemHandler(itemHandlerHelper, i, 8 + y * 18, 18 + x * 18));
+                y++;
+            }
+        }
+    }
+    @Override
+    public @NotNull ItemStack quickMoveStack(@NotNull Player player, int ind) {
+        Slot sourceSlot = slots.get(ind);
+        if (!sourceSlot.hasItem()) return ItemStack.EMPTY;
+        ItemStack sourceStack = sourceSlot.getItem();
+        ItemStack copyOfSourceStack = sourceStack.copy();
+        if (ind < InventorySlotIndex.VANILLA_FIRST_SLOT_INDEX + InventorySlotIndex.VANILLA_SLOT_COUNT){
+            if (!moveItemStackTo(sourceStack,InventorySlotIndex.INVENTORY_FIRST_SLOT_INDEX,InventorySlotIndex.INVENTORY_FIRST_SLOT_INDEX+HashChestBlockEntity.InventorySize,false)){
+                return ItemStack.EMPTY;
+            }
+        }else if (ind < InventorySlotIndex.INVENTORY_FIRST_SLOT_INDEX+HashChestBlockEntity.InventorySize){
+            if (!moveItemStackTo(sourceStack,InventorySlotIndex.VANILLA_FIRST_SLOT_INDEX,InventorySlotIndex.VANILLA_FIRST_SLOT_INDEX + InventorySlotIndex.VANILLA_SLOT_COUNT,false)){
+                return ItemStack.EMPTY;
+            }
+        }else {
+            LOGGER.error("Error Inventory slot index");
+            return ItemStack.EMPTY;
+        }
+        if (sourceStack.getCount() == 0){
+            sourceSlot.set(ItemStack.EMPTY);
+        }else {
+            sourceSlot.setChanged();
+        }
+        sourceSlot.onTake(player,sourceStack);
+        return copyOfSourceStack;
+    }
+
+    public void addPlayerInventory(Inventory playerInv,int x,int y,int space){
+        for (int i= 0; i<3;i++){
+            for (int m = 0;m<9;m++){
+                this.addSlot(new Slot(playerInv,m+i*9+9,x+m*space,y+i*space));
+            }
+        }
+    }
+    public void addPlayerHotBar(Inventory inventory,int x,int y,int space){
+        for (int i = 0;i<9;i++){
+            this.addSlot(new Slot(inventory,i,x+i*space,y));
+        }
+    }
+
+    @Override
+    public boolean stillValid(Player player) {
+        if (blockEntity == null) return false;
+        return stillValid(ContainerLevelAccess.create(player.level(), blockEntity.getBlockPos()),player, BlockRegister.HASH_CHEST.get());
+    }
+}

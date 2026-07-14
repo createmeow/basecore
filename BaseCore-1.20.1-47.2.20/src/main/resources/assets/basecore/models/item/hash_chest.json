@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "basecore:block/hash_chest_top",
+    "up": "basecore:block/hash_chest_top",
+    "north": "basecore:block/hash_chest",
+    "east": "basecore:block/hash_chest",
+    "south": "basecore:block/hash_chest",
+    "west": "basecore:block/hash_chest",
+    "particle": "basecore:block/hash_chest_top"
+  }
+}

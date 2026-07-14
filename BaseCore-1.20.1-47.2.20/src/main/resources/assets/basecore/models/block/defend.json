@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "basecore:block/red_nether_brick",
+    "up": "basecore:block/red_nether_brick",
+    "north": "basecore:block/red_nether_brick",
+    "east": "basecore:block/red_nether_brick",
+    "south": "basecore:block/red_nether_brick",
+    "west": "basecore:block/red_nether_brick",
+    "particle": "basecore:block/red_nether_brick"
+  }
+}

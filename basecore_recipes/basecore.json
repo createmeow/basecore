@@ -1,0 +1,26 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "#C#",
+        "IEI",
+        "###"
+    ],
+    "key": {
+        "#": {
+            "item": "basecore:electronic_component"
+        },
+        "C": {
+            "item": "basecore:antenna"  
+        },
+        "I": {
+            "item": "basecore:module_substrate"
+        },
+        "E": {
+            "item": "basecore:refined_chip"
+        }
+    },
+    "result": {
+        "item": "basecore:basecore",
+        "count": 1
+    }
+}

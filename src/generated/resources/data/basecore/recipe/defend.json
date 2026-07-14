@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "E": {
+      "item": "basecore:refined_chip"
+    },
+    "G": {
+      "item": "basecore:wire"
+    },
+    "c": {
+      "item": "minecraft:copper_ingot"
+    },
+    "g": {
+      "item": "minecraft:gold_ingot"
+    },
+    "i": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "pattern": [
+    "iEg",
+    "EcG",
+    "ccc"
+  ],
+  "result": {
+    "count": 1,
+    "id": "basecore:defend"
+  }
+}
