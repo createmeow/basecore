@@ -2,7 +2,7 @@
 
 [![Minecraft](https://img.shields.io/badge/Minecraft-1.21.1-blue)](https://www.minecraft.net/)
 [![NeoForge](https://img.shields.io/badge/NeoForge-21.1.228-green)](https://neoforged.net/)
-[![License](https://img.shields.io/badge/License-All%20Rights%20Reserved-red)](./TEMPLATE_LICENSE.txt)
+[![License](https://img.shields.io/badge/License-MIT-red)](./TEMPLATE_LICENSE.txt)
 
 > createmeow 科技系列 · 基地核心
 
