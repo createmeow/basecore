@@ -3,6 +3,8 @@ package dev.anye.mc.basecore.event;
 import dev.anye.mc.basecore.BaseCore;
 import dev.anye.mc.basecore.block.BlockEntityRegister;
 import dev.anye.mc.basecore.block.entity.basecore.BasecoreBlockEntityRender;
+import dev.anye.mc.basecore.client.ItemUseProgressRenderer;
+import dev.anye.mc.basecore.client.PlacementHudRenderer;
 import dev.anye.mc.basecore.entity.EntityTypeRegister;
 import dev.anye.mc.basecore.menu.MenuTypeRegister;
 import dev.anye.mc.basecore.screen.BaseCoreScreen;
@@ -14,6 +16,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 
 @EventBusSubscriber(modid = BaseCore.MOD_ID, value = Dist.CLIENT)
@@ -30,5 +33,10 @@ public class ClientEvent {
     public static void register(EntityRenderersEvent.RegisterRenderers event){
         event.registerBlockEntityRenderer(BlockEntityRegister.BASECORE.get(), BasecoreBlockEntityRender::new);
         event.registerEntityRenderer(EntityTypeRegister.ElectromagneticPulseBomb.get(), ThrownItemRenderer::new);
+    }
+    @SubscribeEvent
+    public static void onRegisterGuiLayers(RegisterGuiLayersEvent event) {
+        ItemUseProgressRenderer.register(event);
+        PlacementHudRenderer.register(event);
     }
 }

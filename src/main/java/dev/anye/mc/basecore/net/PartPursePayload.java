@@ -58,14 +58,9 @@ public record PartPursePayload(String action, int amount) implements CustomPacke
                         int toExtract = Math.min(amount, current);
                         if (toExtract <= 0) return;
 
-                        int remaining = toExtract;
-                        while (remaining > 0) {
-                            int batchSize = Math.min(remaining, 64);
-                            ItemStack giveStack = new ItemStack(ItemRegister.PART.get(), batchSize);
-                            if (!serverPlayer.getInventory().add(giveStack)) {
-                                serverPlayer.drop(giveStack, false);
-                            }
-                            remaining -= batchSize;
+                        ItemStack bundle = dev.anye.mc.basecore.item.component.PartBundleItem.create(toExtract);
+                        if (!serverPlayer.getInventory().add(bundle)) {
+                            serverPlayer.drop(bundle, false);
                         }
                         PartHolder.modify(serverPlayer, -toExtract);
                     }
@@ -73,14 +68,9 @@ public record PartPursePayload(String action, int amount) implements CustomPacke
                         int allCurrent = PartHolder.getValue(serverPlayer);
                         if (allCurrent <= 0) return;
 
-                        int remaining2 = allCurrent;
-                        while (remaining2 > 0) {
-                            int batchSize = Math.min(remaining2, 64);
-                            ItemStack giveStack = new ItemStack(ItemRegister.PART.get(), batchSize);
-                            if (!serverPlayer.getInventory().add(giveStack)) {
-                                serverPlayer.drop(giveStack, false);
-                            }
-                            remaining2 -= batchSize;
+                        ItemStack bundle = dev.anye.mc.basecore.item.component.PartBundleItem.create(allCurrent);
+                        if (!serverPlayer.getInventory().add(bundle)) {
+                            serverPlayer.drop(bundle, false);
                         }
                         PartHolder.modify(serverPlayer, -allCurrent);
                     }

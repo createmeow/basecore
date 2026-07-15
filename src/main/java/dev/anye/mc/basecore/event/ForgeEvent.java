@@ -13,6 +13,7 @@ import dev.anye.mc.basecore.block.entity.DamageBlockEntity;
 import dev.anye.mc.basecore.block.entity.DefendBlockEntity;
 import dev.anye.mc.basecore.block.entity.HashChestBlockEntity;
 import dev.anye.mc.basecore.block.entity.NothingBlockEntity;
+import dev.anye.mc.basecore.block.entity.PlaceholderBlockEntity;
 import dev.anye.mc.basecore.block.entity.ToDamageBlockEntity;
 import dev.anye.mc.basecore.block.entity.basecore.BaseCoreBlockEntity;
 import dev.anye.mc.basecore.cap.PartHolder;
@@ -55,6 +56,8 @@ import org.slf4j.Logger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @EventBusSubscriber(modid = BaseCore.MOD_ID)
 public class ForgeEvent {
@@ -418,6 +421,46 @@ public class ForgeEvent {
                 serverPlayer.getPersistentData().remove("bcrm.basecore.isCheck");
                 serverPlayer.getPersistentData().remove("bcrm.basecore.isDiscern");
 
+            }
+        }
+    }
+    public static final Map<UUID, BlockPos> ACTIVE_PLACEMENTS = new HashMap<>();
+
+    @SubscribeEvent
+    public static void onBlockBreak(BlockEvent.BreakEvent event) {
+        if (event.getPlayer() == null) return;
+        UUID uuid = event.getPlayer().getUUID();
+        BlockPos pos = ACTIVE_PLACEMENTS.get(uuid);
+        if (pos != null) {
+            cancelPlayerPlacement(event.getPlayer(), event.getLevel(), pos);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLeftClickBlock(PlayerInteractEvent.LeftClickBlock event) {
+        if (event.getEntity() == null) return;
+        UUID uuid = event.getEntity().getUUID();
+        BlockPos pos = ACTIVE_PLACEMENTS.get(uuid);
+        if (pos != null) {
+            cancelPlayerPlacement(event.getEntity(), event.getLevel(), pos);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
+        if (event.getEntity() == null) return;
+        UUID uuid = event.getEntity().getUUID();
+        BlockPos pos = ACTIVE_PLACEMENTS.get(uuid);
+        if (pos != null && !event.getItemStack().isEmpty()) {
+            cancelPlayerPlacement(event.getEntity(), event.getLevel(), pos);
+        }
+    }
+
+    private static void cancelPlayerPlacement(Player player, net.minecraft.world.level.LevelAccessor levelAccessor, BlockPos pos) {
+        if (levelAccessor instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+            if (serverLevel.getBlockEntity(pos) instanceof PlaceholderBlockEntity be) {
+                // Trigger cancellation via the BE's cancel logic
+                be.cancelFor(player);
             }
         }
     }

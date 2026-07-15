@@ -5,6 +5,7 @@ import dev.anye.mc.basecore.block.entity.DamageBlockEntity;
 import dev.anye.mc.basecore.block.entity.DefendBlockEntity;
 import dev.anye.mc.basecore.block.entity.HashChestBlockEntity;
 import dev.anye.mc.basecore.block.entity.NothingBlockEntity;
+import dev.anye.mc.basecore.block.entity.PlaceholderBlockEntity;
 import dev.anye.mc.basecore.block.entity.basecore.BaseCoreBlockEntity;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -20,6 +21,7 @@ public class BlockEntityRegister {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<DefendBlockEntity>> Defend = BLOCK_ENTITIES.register("defend", () -> BlockEntityType.Builder.of(DefendBlockEntity::new, BlockRegister.DEFEND.get()).build(null));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<HashChestBlockEntity>> HashChest = BLOCK_ENTITIES.register("hash_chest", () -> BlockEntityType.Builder.of(HashChestBlockEntity::new, BlockRegister.HASH_CHEST.get()).build(null));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<NothingBlockEntity>> NOTHING = BLOCK_ENTITIES.register("nothing", () -> BlockEntityType.Builder.of(NothingBlockEntity::new, BlockRegister.NOTHING.get()).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PlaceholderBlockEntity>> PLACEHOLDER = BLOCK_ENTITIES.register("placeholder", () -> BlockEntityType.Builder.of(PlaceholderBlockEntity::new, BlockRegister.PLACEHOLDER.get()).build(null));
 
     public static void reg(IEventBus eventBus){
         BLOCK_ENTITIES.register(eventBus);

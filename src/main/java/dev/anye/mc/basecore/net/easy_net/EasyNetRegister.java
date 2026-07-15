@@ -4,6 +4,7 @@ import dev.anye.mc.basecore.BaseCore;
 import dev.anye.mc.basecore.net.Net;
 import dev.anye.mc.basecore.net.MemberActionPayload;
 import dev.anye.mc.basecore.net.PartPursePayload;
+import dev.anye.mc.basecore.net.PlacementProgressPayload;
 import dev.anye.mc.basecore.net.UpgradeActionPayload;
 import dev.anye.mc.basecore.net.UpgradeMenuS2CPayload;
 import dev.anye.mc.basecore.net.UpgradeRefreshPayload;
@@ -71,6 +72,18 @@ public class EasyNetRegister {
             MemberActionPayload.TYPE,
             MemberActionPayload.STREAM_CODEC,
             MemberActionPayload::handle
+        );
+
+        // Placement progress S2C
+        registrar.playToClient(
+            PlacementProgressPayload.TYPE,
+            PlacementProgressPayload.STREAM_CODEC,
+            (payload, context) -> {
+                context.enqueueWork(() -> {
+                    dev.anye.mc.basecore.client.data.ClientPlacementData.INSTANCE.update(
+                        payload.remainingTicks(), payload.displayName());
+                });
+            }
         );
     }
 

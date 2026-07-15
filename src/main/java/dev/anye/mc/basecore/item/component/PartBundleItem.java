@@ -94,6 +94,7 @@ public class PartBundleItem extends Item {
 
         if (!level.isClientSide) {
             PartHolder.modify(player, count);
+            player.displayClientMessage(Component.literal("§a+" + count + " §7零件"), true);
         }
         return InteractionResultHolder.success(ItemStack.EMPTY);
     }

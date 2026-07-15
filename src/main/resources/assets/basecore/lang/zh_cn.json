@@ -122,7 +122,12 @@
   "message.basecore.upgrade.max_reached": "§e%s 已达到最大数量！",
   "message.basecore.sell_back": "§a移除成功！获得 §e%s §a个零件，已移除 §e%s",
   "item.basecore.part_bundle": "零件包",
+  "item.basecore.small_part_bundle": "小型零件包",
+  "item.basecore.medium_part_bundle": "中型零件包",
+  "item.basecore.large_part_bundle": "大型零件包",
+
   "tooltip.basecore.part_bundle.count": "内含 %s 个零件",
+  "tooltip.basecore.loot_part_bundle.range": "§7内含 %s~%s 个零件",
   "gui.basecore.purse.store": "存入",
   "gui.basecore.purse.extract": "提取",
   "gui.basecore.purse.balance": "零件: %s",

@@ -120,7 +120,12 @@
   "message.basecore.upgrade.max_reached": "§e%s has reached maximum count!",
   "message.basecore.sell_back": "§aRemove successful! Obtained §e%s §aparts, removed §e%s",
   "item.basecore.part_bundle": "Part Bundle",
+  "item.basecore.small_part_bundle": "Small Part Bundle",
+  "item.basecore.medium_part_bundle": "Medium Part Bundle",
+  "item.basecore.large_part_bundle": "Large Part Bundle",
+
   "tooltip.basecore.part_bundle.count": "Contains %s parts",
+  "tooltip.basecore.loot_part_bundle.range": "§7Contains %s~%s parts",
   "gui.basecore.purse.store": "Store",
   "gui.basecore.purse.extract": "Extract",
   "gui.basecore.purse.balance": "Parts: %s"

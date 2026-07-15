@@ -34,7 +34,7 @@ public class BaseCoreBlock extends FunctionEntityBlock {
     private static final MapCodec<BaseCoreBlock> CODEC = simpleCodec(p -> new BaseCoreBlock());
     public ItemStack dropItem;
     public BaseCoreBlock() {
-        super(net.minecraft.world.level.block.Blocks.IRON_BLOCK.properties().sound(new SoundType(1.0F, 1.0F, SoundEvents.NETHERITE_BLOCK_PLACE, SoundEvents.NETHERITE_BLOCK_STEP, SoundEvents.NETHERITE_BLOCK_BREAK, SoundEvents.NETHERITE_BLOCK_HIT, SoundEvents.NETHERITE_BLOCK_FALL)));
+        super(net.minecraft.world.level.block.Blocks.IRON_BLOCK.properties().sound(SoundType.HEAVY_CORE));
     }
 
     @Override

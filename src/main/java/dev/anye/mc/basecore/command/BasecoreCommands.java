@@ -198,17 +198,14 @@ public class BasecoreCommands {
                 return SUCCESS;
             }
             int toExtract = Math.min(amount, current);
-            int remaining = toExtract;
-            while (remaining > 0) {
-                int batchSize = Math.min(remaining, 64);
-                ItemStack giveStack = new ItemStack(ItemRegister.PART.get(), batchSize);
-                if (!serverPlayer.getInventory().add(giveStack)) {
-                    serverPlayer.drop(giveStack, false);
+            if (toExtract > 0) {
+                ItemStack bundle = dev.anye.mc.basecore.item.component.PartBundleItem.create(toExtract);
+                if (!serverPlayer.getInventory().add(bundle)) {
+                    serverPlayer.drop(bundle, false);
                 }
-                remaining -= batchSize;
+                PartHolder.modify(serverPlayer, -toExtract);
+                sendCommandMsg(context, "§a成功提取 §e" + toExtract + " §a个零件");
             }
-            PartHolder.modify(serverPlayer, -toExtract);
-            sendCommandMsg(context, "§a成功提取 §e" + toExtract + " §a个零件");
             return SUCCESS;
         }
         return FAILED;
@@ -225,14 +222,9 @@ public class BasecoreCommands {
                 sendCommandMsg(context, "§e没有存储的零件可提取");
                 return SUCCESS;
             }
-            int remaining = current;
-            while (remaining > 0) {
-                int batchSize = Math.min(remaining, 64);
-                ItemStack giveStack = new ItemStack(ItemRegister.PART.get(), batchSize);
-                if (!serverPlayer.getInventory().add(giveStack)) {
-                    serverPlayer.drop(giveStack, false);
-                }
-                remaining -= batchSize;
+            ItemStack bundle = dev.anye.mc.basecore.item.component.PartBundleItem.create(current);
+            if (!serverPlayer.getInventory().add(bundle)) {
+                serverPlayer.drop(bundle, false);
             }
             PartHolder.modify(serverPlayer, -current);
             sendCommandMsg(context, "§a成功提取全部 §e" + current + " §a个零件");

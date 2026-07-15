@@ -1,6 +1,7 @@
 package dev.anye.mc.basecore.item;
 
 import dev.anye.mc.basecore.BaseCore;
+import dev.anye.mc.basecore.item.component.LootPartBundleItem;
 import dev.anye.mc.basecore.item.component.PartBundleItem;
 import dev.anye.mc.basecore.item.component.PartItem;
 import dev.anye.mc.basecore.item.module.*;
@@ -61,6 +62,11 @@ public class ItemRegister {
     // Component mode: Part items
     public static final DeferredHolder<Item, PartItem> PART = ITEMS.register("part", PartItem::new);
     public static final DeferredHolder<Item, PartBundleItem> PART_BUNDLE = ITEMS.register("part_bundle", PartBundleItem::new);
+
+    // Airdrop loot: realityvalue-style part bundles
+    public static final DeferredHolder<Item, LootPartBundleItem> SMALL_PART_BUNDLE = ITEMS.register("small_part_bundle", () -> new LootPartBundleItem(Rarity.UNCOMMON, 5, 35));
+    public static final DeferredHolder<Item, LootPartBundleItem> MEDIUM_PART_BUNDLE = ITEMS.register("medium_part_bundle", () -> new LootPartBundleItem(Rarity.RARE, 34, 60));
+    public static final DeferredHolder<Item, LootPartBundleItem> LARGE_PART_BUNDLE = ITEMS.register("large_part_bundle", () -> new LootPartBundleItem(Rarity.EPIC, 59, 100));
 
     public static void reg(IEventBus eventBus) {
         ITEMS.register(eventBus);

@@ -2,6 +2,7 @@ package dev.anye.mc.basecore.item.component;
 
 import dev.anye.mc.basecore.cap.PartHolder;
 import dev.anye.mc.basecore.item.ItemRegister;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.SlotAccess;
@@ -25,6 +26,7 @@ public class PartItem extends Item {
 
         if (!level.isClientSide) {
             PartHolder.modify(player, count);
+            player.displayClientMessage(Component.literal("§a+" + count + " §7零件"), true);
         }
 
         return InteractionResultHolder.success(ItemStack.EMPTY);
@@ -52,23 +54,41 @@ public class PartItem extends Item {
             return true;
         }
 
-        // Left-click with a PartBundleItem: merge bundle contents into this part item
+        // Left-click with a PartBundleItem: merge bundle into part, or part into bundle if full
         if (clickType == ClickAction.PRIMARY && otherStack.getItem() instanceof PartBundleItem bundleItem) {
             int bundleCount = PartBundleItem.getCount(otherStack);
             int space = clickedStack.getMaxStackSize() - clickedStack.getCount();
-            int mergeCount = Math.min(space, bundleCount);
-            if (mergeCount <= 0) return false;
 
-            clickedStack.grow(mergeCount);
-            slot.set(clickedStack);
+            if (space > 0) {
+                // Part has space → fill it from the bundle
+                int mergeCount = Math.min(space, bundleCount);
+                clickedStack.grow(mergeCount);
+                slot.set(clickedStack);
 
-            int remaining = bundleCount - mergeCount;
-            if (remaining <= 0) {
-                cursorStackReference.set(ItemStack.EMPTY);
+                int remaining = bundleCount - mergeCount;
+                if (remaining <= 0) {
+                    cursorStackReference.set(ItemStack.EMPTY);
+                } else {
+                    PartBundleItem.setCount(otherStack, remaining);
+                    cursorStackReference.set(otherStack);
+                }
             } else {
-                PartBundleItem.setCount(otherStack, remaining);
+                // Part is full → absorb it into the bundle
+                int partCount = clickedStack.getCount();
+                PartBundleItem.setCount(otherStack, bundleCount + partCount);
                 cursorStackReference.set(otherStack);
+                slot.set(ItemStack.EMPTY);
             }
+            return true;
+        }
+
+        // Right-click with a PartBundleItem: always merge part INTO bundle
+        if (clickType == ClickAction.SECONDARY && otherStack.getItem() instanceof PartBundleItem bundleItem) {
+            int bundleCount = PartBundleItem.getCount(otherStack);
+            int partCount = clickedStack.getCount();
+            PartBundleItem.setCount(otherStack, bundleCount + partCount);
+            cursorStackReference.set(otherStack);
+            slot.set(ItemStack.EMPTY);
             return true;
         }
 

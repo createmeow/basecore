@@ -22,7 +22,7 @@ import java.util.List;
 
 public class BasecoreItem extends BlockItem {
     public BasecoreItem() {
-        super(BlockRegister.BASE_CORE.get(), new Properties().rarity(Rarity.RARE));
+        super(BlockRegister.BASE_CORE.get(), new Properties().rarity(Rarity.EPIC));
     }
 
     @Override
@@ -31,40 +31,20 @@ public class BasecoreItem extends BlockItem {
             CustomData blockEntityData = pContext.getItemInHand().get(DataComponents.BLOCK_ENTITY_DATA);
             CompoundTag compoundTag = blockEntityData != null ? blockEntityData.copyTag() : null;
             if (compoundTag != null && compoundTag.hasUUID(BaseCoreBlock.OWNER_KEY)) {
-                if (compoundTag.getUUID(BaseCoreBlock.OWNER_KEY).equals(serverPlayer.getUUID())) {
-                    return super.useOn(pContext);
+                if (!compoundTag.getUUID(BaseCoreBlock.OWNER_KEY).equals(serverPlayer.getUUID())) {
+                    serverPlayer.hurt(serverPlayer.damageSources().fellOutOfWorld(), 2.0f);
+                    return InteractionResult.FAIL;
                 }
-                serverPlayer.hurt(serverPlayer.damageSources().fellOutOfWorld(),2.0f);
-            }else {
-                return super.useOn(pContext);
             }
-        }
-        return InteractionResult.FAIL;
-    }
-/*
-    @Override
-    protected boolean canPlace(BlockPlaceContext pContext, BlockState pState) {
-        if (!pContext.getLevel().isClientSide()) {
-            if (ActivityBasecores.check(pContext.getLevel(), pContext.getClickedPos(), pContext.getItemInHand()))
-                return super.canPlace(pContext, pState);
-            if (pContext.getPlayer() != null) {
-                pContext.getPlayer().sendSystemMessage(Component.translatable("error.basecore.permission.range_has_basecore"));
+            // Start 30s placement
+            if (PlacementHelper.startPlacement(serverPlayer, pContext, pContext.getItemInHand(), BlockRegister.BASE_CORE.get())) {
+                return InteractionResult.SUCCESS;
             }
-        }
-        return false;
-    }
-
-    @Override
-    public InteractionResult place(BlockPlaceContext pContext) {
-        if (super.place(pContext) == InteractionResult.sidedSuccess(pContext.getLevel().isClientSide) && pContext.getLevel() instanceof ServerLevel serverLevel){
-            serverLevel.getBlockEntity(pContext.getClickedPos(), BlockEntityRegister.BASECORE.get()).ifPresent(baseCoreBlockEntity -> baseCoreBlockEntity.setOwner(pContext.getPlayer().getUUID()));
-            return InteractionResult.sidedSuccess(pContext.getLevel().isClientSide);
+            return super.useOn(pContext);
         }
         return InteractionResult.FAIL;
     }
 
-
- */
     @Override
     public void appendHoverText(ItemStack pStack, TooltipContext pContext, List<Component> pTooltip, TooltipFlag pFlag) {
         CustomData blockEntityData = pStack.get(DataComponents.BLOCK_ENTITY_DATA);
