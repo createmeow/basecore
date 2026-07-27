@@ -158,7 +158,7 @@ BaseCore 是一款面向 Minecraft 1.21.1（NeoForge）的基地建设与防御�
 ## 安装方法
 
 1. 确保已安装 **Minecraft 1.21.1** 与对应版本的 **NeoForge** 启动器。
-2. 下载 `basecore-1.0.2.jar`。
+2. 下载 `basecore-1.0.3.jar`。
 3. 将 JAR 文件放入游戏目录下的 `mods` 文件夹。
 4. 启动游戏，在创造模式物品栏的“基地核心”标签页或 JEI/EMI 中查看所有物品。
 
@@ -175,7 +175,7 @@ BaseCore 是一款面向 Minecraft 1.21.1（NeoForge）的基地建设与防御�
 ./gradlew runData
 ```
 
-构建产物位于 `build/libs/basecore-1.0.2.jar`。
+构建产物位于 `build/libs/basecore-1.0.3.jar`。
 
 ---
 
