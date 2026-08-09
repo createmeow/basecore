@@ -154,4 +154,24 @@ public class BasecoreServerHelper {
         }
         return false;
     }
+
+    /**
+     * 生成一个不与任何现有基地重名的默认基地名称。
+     * <p>
+     * 基本名称格式为 "{playerName}的基地"；若已存在同名基地，
+     * 则依次追加数字后缀（"{playerName}的基地1"、"{playerName}的基地2" ...）。
+     * </p>
+     *
+     * @param playerName 领主玩家名
+     * @return 唯一不冲突的基地名称
+     */
+    public static String getUniqueBaseName(String playerName) {
+        String baseName = playerName + "的基地";
+        if (!hasName(baseName)) return baseName;
+        int i = 1;
+        while (hasName(baseName + i)) {
+            i++;
+        }
+        return baseName + i;
+    }
 }

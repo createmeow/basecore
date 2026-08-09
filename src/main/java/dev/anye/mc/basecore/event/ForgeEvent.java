@@ -19,11 +19,15 @@ import dev.anye.mc.basecore.block.entity.basecore.BaseCoreBlockEntity;
 import dev.anye.mc.basecore.cap.PartHolder;
 import dev.anye.mc.basecore.command.BasecoreCommands;
 import dev.anye.mc.basecore.effect.EffectRegister;
+import dev.anye.mc.basecore.item.BasecoreItem;
+import dev.anye.mc.basecore.item.DefendBlockItem;
+import dev.anye.mc.basecore.item.HashChestBlockItem;
 import dev.anye.mc.basecore.item.ItemRegister;
 import dev.anye.mc.basecore.item.module.BaseModuleItem;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -36,6 +40,7 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -133,6 +138,12 @@ public class ForgeEvent {
     @SubscribeEvent
     public static void onUse(PlayerInteractEvent.RightClickBlock event){
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
+            // Prevent placing/interacting with foreign-owned mechanical items from either hand
+            if (isForeignOwnedMechanicalItem(event.getItemStack(), serverPlayer)) {
+                serverPlayer.displayClientMessage(Component.translatable("error.basecore.permission.right_click_block"), true);
+                event.setCanceled(true);
+                return;
+            }
             if (!BasecoreServerHelper.hasPermission(event.getLevel(), event.getPos().getCenter(), serverPlayer.getUUID())) {
                 if (event.getLevel().getBlockEntity(event.getPos()) instanceof HashChestBlockEntity hashChestBlockEntity){
                     if (hashChestBlockEntity.canUse(serverPlayer.getUUID())){
@@ -463,5 +474,23 @@ public class ForgeEvent {
                 be.cancelFor(player);
             }
         }
+    }
+
+    /**
+     * Checks whether the held item is one of this mod's mechanical items and belongs to another player.
+     * Used to stop both main-hand and off-hand placement attempts before they reach Item#useOn.
+     */
+    private static boolean isForeignOwnedMechanicalItem(ItemStack stack, ServerPlayer player) {
+        if (stack.isEmpty()) return false;
+        if (!(stack.getItem() instanceof BasecoreItem ||
+              stack.getItem() instanceof DefendBlockItem ||
+              stack.getItem() instanceof HashChestBlockItem)) {
+            return false;
+        }
+        CustomData customData = stack.get(DataComponents.BLOCK_ENTITY_DATA);
+        if (customData == null) return false;
+        CompoundTag data = customData.copyTag();
+        if (!data.hasUUID(BaseCoreBlock.OWNER_KEY)) return false;
+        return !data.getUUID(BaseCoreBlock.OWNER_KEY).equals(player.getUUID());
     }
 }

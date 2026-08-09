@@ -4,8 +4,6 @@ import com.mojang.logging.LogUtils;
 import dev.anye.mc.basecore.block.BlockRegister;
 import dev.anye.mc.basecore.block.entity.basecore.BaseCoreBlockEntity;
 import dev.anye.mc.basecore.cap.PartHolder;
-import dev.anye.mc.basecore.config.BasecoreConfig;
-import dev.anye.mc.basecore.item.ItemRegister;
 import dev.anye.mc.basecore.item.module.BasecoreModuleItem;
 import dev.anye.mc.basecore.menu.MenuTypeRegister;
 import net.minecraft.core.BlockPos;
@@ -69,31 +67,13 @@ public class BasecoreUpgradeMenu extends AbstractContainerMenu {
         entries = new ArrayList<>();
         if (baseCore == null) return;
 
-        if (isDefend) {
-            // Defense turret upgrades (each module type maps to DefendBlockEntity.itemChange())
-            addEntry(ItemRegister.RangeModule.get(), BasecoreConfig.getUpgradeDefendRangeCost());
-            addEntry(ItemRegister.DefModule.get(), BasecoreConfig.getUpgradeDefendDefenseCost());
-            addEntry(ItemRegister.ThornsModule.get(), BasecoreConfig.getUpgradeDefendThornsCost());
-            addEntry(ItemRegister.AutoRepairModule.get(), BasecoreConfig.getUpgradeDefendAutoRepairCost());
-            addEntry(ItemRegister.StrengthModule.get(), BasecoreConfig.getUpgradeDefendStrengthCost());
-        } else {
-            addEntry(ItemRegister.RangeModule.get(), BasecoreConfig.getUpgradeRangeCost());
-            addEntry(ItemRegister.DefModule.get(), BasecoreConfig.getUpgradeDefenseCost());
-            addEntry(ItemRegister.SecureModule.get(), BasecoreConfig.getUpgradeSecureCost());
-            addEntry(ItemRegister.AutoRepairModule.get(), BasecoreConfig.getUpgradeAutoRepairCost());
-            addEntry(ItemRegister.ThornsModule.get(), BasecoreConfig.getUpgradeThornsCost());
-            addEntry(ItemRegister.ExpDefModule.get(), BasecoreConfig.getUpgradeExpDefCost());
-            addEntry(ItemRegister.BasecoreCounterReconnaissanceMdoule.get(), BasecoreConfig.getUpgradeCounterReconCost());
-            addEntry(ItemRegister.StrengthModule.get(), BasecoreConfig.getUpgradeStrengthCost());
-            addEntry(ItemRegister.JumpBoostModule.get(), BasecoreConfig.getUpgradeJumpBoostCost());
-            addEntry(ItemRegister.RegenerationModule.get(), BasecoreConfig.getUpgradeRegenerationCost());
-            addEntry(ItemRegister.ResistanceModule.get(), BasecoreConfig.getUpgradeResistanceCost());
-            addEntry(ItemRegister.DigSpeedModule.get(), BasecoreConfig.getUpgradeDigSpeedCost());
-            addEntry(ItemRegister.MovementSpeedModule.get(), BasecoreConfig.getUpgradeMovementSpeedCost());
-            // Negative effect modules (for invaders)
-            addEntry(ItemRegister.DigSlowdownModule.get(), BasecoreConfig.getUpgradeDigSlowdownCost());
-            addEntry(ItemRegister.WeaknessModule.get(), BasecoreConfig.getUpgradeWeaknessCost());
-            addEntry(ItemRegister.MovementSlowdownModule.get(), BasecoreConfig.getUpgradeMovementSlowdownCost());
+        // 遍历 API 注册的全部升级项，按当前目标（基地核心/防御炮）过滤
+        for (dev.anye.mc.basecore.api.UpgradeDefinition def : dev.anye.mc.basecore.api.BasecoreUpgradeApi.getUpgrades()) {
+            if (isDefend && !def.appliesToDefend()) continue;
+            if (!isDefend && !def.appliesToBaseCore()) continue;
+            dev.anye.mc.basecore.item.module.BasecoreModuleItem module = def.getModule();
+            if (module == null) continue;
+            addEntry(module, def.getPartCost());
         }
     }
 

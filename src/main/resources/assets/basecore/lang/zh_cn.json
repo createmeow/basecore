@@ -33,7 +33,7 @@
   "item.basecore.regeneration_module": "生命回复模块",
   "item.basecore.resistance_module": "抗性提升模块",
   "item.basecore.dig_speed_module": "挖掘速度提升模块",
-  "item.basecore.movement_speed_module": "移动速度提升模块",
+  "item.basecore.movement_speed_module": "速度模块",
   "item.basecore.dig_slowdown_module": "挖掘疲劳模块",
   "item.basecore.weakness_module": "虚弱模块",
   "item.basecore.movement_slowdown_module": "缓慢模块",
@@ -131,5 +131,8 @@
   "gui.basecore.purse.store": "存入",
   "gui.basecore.purse.extract": "提取",
   "gui.basecore.purse.balance": "零件: %s",
-  "gui.basecore.upgrade.title": "基地核心升级"
+  "gui.basecore.upgrade.title": "基地核心升级",
+
+  "death.attack.cannon_shot": "%1$s被防御炮轰死了了",
+  "death.attack.cannon_shot.player": "%1$s被%2$s的防御炮轰死了"
 }

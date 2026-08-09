@@ -115,6 +115,28 @@ public class PlaceholderBlockEntity extends BlockEntity {
         }
     }
 
+    /**
+     * 兜底：占位方块被异常移除（水冲、爆炸、活塞推动等，非 cancel/complete 正常路径）时，
+     * 返还物品给放置者并清理进行中放置状态，避免"物品已消耗但放置未完成"的异常。
+     * 正常路径下 cancel/complete 都会先把 remainingTicks 置 0 再 removeBlock，此处不会重复处理。
+     */
+    @Override
+    public void setRemoved() {
+        if (remainingTicks > 0 && placerUUID != null) {
+            remainingTicks = 0;
+            dev.anye.mc.basecore.event.ForgeEvent.ACTIVE_PLACEMENTS.remove(placerUUID);
+            if (level instanceof ServerLevel serverLevel) {
+                Player player = serverLevel.getPlayerByUUID(placerUUID);
+                if (player instanceof ServerPlayer serverPlayer && !returnStack.isEmpty()) {
+                    if (!serverPlayer.getInventory().add(returnStack)) {
+                        serverPlayer.drop(returnStack, false);
+                    }
+                }
+            }
+        }
+        super.setRemoved();
+    }
+
     private void cancelPlacement(Level level, BlockPos pos, ServerPlayer player) {
         remainingTicks = 0;
         dev.anye.mc.basecore.event.ForgeEvent.ACTIVE_PLACEMENTS.remove(placerUUID);

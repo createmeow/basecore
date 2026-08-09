@@ -1,5 +1,6 @@
 package dev.anye.mc.basecore.block.entity;
 
+import dev.anye.mc.basecore.BaseCore;
 import dev.anye.mc.basecore.block.BlockEntityRegister;
 import dev.anye.mc.basecore.block.IHealth;
 import dev.anye.mc.basecore.block.entity.ToDamageBlockEntity;
@@ -11,12 +12,18 @@ import dev.anye.mc.basecore.net.Net;
 import dev.anye.mc.basecore.net.NetReg;
 import dev.anye.mc.basecore.net.easy_net.EasyNetPayload;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.player.Inventory;
@@ -36,6 +43,7 @@ import java.util.*;
 
 public class DefendBlockEntity extends ToDamageBlockEntity<BaseModuleItem> implements MenuProvider, IHealth {
     private static final int inventorySize = 27;
+    private static final ResourceKey<DamageType> CANNON_SHOT = ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(BaseCore.MOD_ID, "cannon_shot"));
     private UUID owner;
     private int range = 15;
     private int health = 50;
@@ -177,6 +185,9 @@ public class DefendBlockEntity extends ToDamageBlockEntity<BaseModuleItem> imple
 
     /** Get the max allowed count for a module type. */
     public int getModuleMax(net.minecraft.world.item.Item moduleItem) {
+        // 社区扩展可通过 API 覆盖任意模块（含内置模块）的上限
+        Integer apiMax = dev.anye.mc.basecore.api.BasecoreUpgradeApi.getDefendModuleMax(moduleItem);
+        if (apiMax != null) return apiMax;
         if (moduleItem == ItemRegister.RangeModule.get()) return 4;
         if (moduleItem == ItemRegister.DefModule.get()) return 2;
         if (moduleItem == ItemRegister.AutoRepairModule.get()) return 2;
@@ -201,6 +212,11 @@ public class DefendBlockEntity extends ToDamageBlockEntity<BaseModuleItem> imple
                 level.getPlayers(p -> true).forEach(p -> level.sendParticles(p, ParticleTypes.FLAME, false, pos.x, pos.y, pos.z, 1, 0, 0, 0, 0));
             }
         }
+    }
+
+    private static DamageSource cannonShot(Level level) {
+        Holder<DamageType> holder = level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(CANNON_SHOT);
+        return new DamageSource(holder);
     }
 
     public void tick(Level pLevel, BlockPos pPos, BlockState pState) {
@@ -256,7 +272,7 @@ public class DefendBlockEntity extends ToDamageBlockEntity<BaseModuleItem> imple
                                 serverPlayer.level().getRandom().nextFloat() * 0.4F + 0.8F
                         );
                         shootBeam(serverLevel, Vec3.atCenterOf(pPos), serverPlayer.position(), serverPlayer);
-                        serverPlayer.hurt(pLevel.damageSources().fellOutOfWorld(), dmg);
+                        serverPlayer.hurt(cannonShot(pLevel), dmg);
                     });
                 }
             }
@@ -279,7 +295,7 @@ public class DefendBlockEntity extends ToDamageBlockEntity<BaseModuleItem> imple
                                 livingEntity.level().getRandom().nextFloat() * 0.4F + 0.8F
                         );
                         shootBeam(serverLevel, Vec3.atCenterOf(pPos), livingEntity.position(), null);
-                        livingEntity.hurt(livingEntity.damageSources().fellOutOfWorld(), dmg);
+                        livingEntity.hurt(cannonShot(pLevel), dmg);
                     });
                 }
             }

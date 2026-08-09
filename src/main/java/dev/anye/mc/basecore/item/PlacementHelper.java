@@ -1,5 +1,7 @@
 package dev.anye.mc.basecore.item;
 
+import dev.anye.mc.basecore.BaseCore;
+import dev.anye.mc.basecore.basecore.BasecoreServerHelper;
 import dev.anye.mc.basecore.block.BlockRegister;
 import dev.anye.mc.basecore.block.entity.PlaceholderBlockEntity;
 import dev.anye.mc.basecore.block.placeholder.PlaceholderBlock;
@@ -58,6 +60,14 @@ public class PlacementHelper {
             return true;
         }
 
+        // Check for nearby base core conflicts
+        if (targetBlock == BlockRegister.BASE_CORE.get()) {
+            if (!BasecoreServerHelper.check(level, targetPos, stack)) {
+                player.displayClientMessage(Component.translatable("error.basecore.permission.range_has_basecore"), true);
+                return true;
+            }
+        }
+
         // Get the item's NBT data (owner, modules, etc.)
         CompoundTag data = null;
         CustomData customData = stack.get(DataComponents.BLOCK_ENTITY_DATA);
@@ -65,8 +75,17 @@ public class PlacementHelper {
             data = customData.copyTag();
         }
 
-        // Ensure the owner is always set
+        // Verify ownership: if the item has a stored owner, only that player can place it
         UUID playerUUID = player.getUUID();
+        if (data != null && data.hasUUID("owner")) {
+            UUID storedOwner = data.getUUID("owner");
+            if (!storedOwner.equals(playerUUID)) {
+                player.displayClientMessage(Component.translatable("error.basecore.permission.right_click_block"), true);
+                return true;
+            }
+        }
+
+        // Ensure the owner is always set
         if (data == null) {
             data = new CompoundTag();
         }
@@ -77,9 +96,9 @@ public class PlacementHelper {
         if (!data.contains("owner_name") || data.getString("owner_name").isEmpty()) {
             data.putString("owner_name", player.getName().getString());
         }
-        // Set default base name if empty: "<player_name>的基地"
+        // Set default base name if empty: "<player_name>的基地"（自动避让重名）
         if (!data.contains("name") || data.getString("name").isEmpty()) {
-            data.putString("name", player.getName().getString() + "的基地");
+            data.putString("name", BasecoreServerHelper.getUniqueBaseName(player.getName().getString()));
         }
 
         String blockId = net.minecraft.resources.ResourceLocation.parse(

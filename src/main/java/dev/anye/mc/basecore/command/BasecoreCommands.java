@@ -69,7 +69,7 @@ public class BasecoreCommands {
                         if (be.getOwner() == null) return;
                         if (be.getOwner().equals(serverPlayer.getUUID())) {
                             if (!be.getEntityData().hasPermission(player.getUUID())) {
-                                be.getEntityData().addUser(player.getUUID());
+                                be.getEntityData().addPermissionWithName(player.getUUID(), player.getName().getString());
                                 be.setChanged();
                                 be.updateToClient();
                                 sendCommandMsg(context, "已添加对方为基地成员");

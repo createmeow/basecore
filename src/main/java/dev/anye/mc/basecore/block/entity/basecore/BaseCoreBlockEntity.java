@@ -37,6 +37,8 @@ public class BaseCoreBlockEntity extends ToDamageBlockEntity<BasecoreModuleItem>
     private @Nullable UUID owner = null;
     private final BasecoreBlockEntityData entityData;
     protected final ContainerData data;
+    /** True while {@link #loadAdditional} is running; suppresses {@link #setChanged()} side effects. */
+    private boolean loading = false;
 
     public BaseCoreBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(BlockEntityRegister.BASECORE.get(), pPos, pBlockState, inventorySize);
@@ -71,6 +73,7 @@ public class BaseCoreBlockEntity extends ToDamageBlockEntity<BasecoreModuleItem>
     @Override
     public void setChanged() {
         super.setChanged();
+        if (loading) return;
         itemChange();
         updateToClient();
     }
@@ -91,14 +94,10 @@ public class BaseCoreBlockEntity extends ToDamageBlockEntity<BasecoreModuleItem>
         if (this.owner == null) this.owner = owner;
         entityData.setOwner(this.owner);
         entityData.setOwnerName(playerName);
-        String baseName = playerName + "的基地";
-        String name = baseName;
-        int i = 0;
-        while (dev.anye.mc.basecore.basecore.BasecoreServerHelper.hasName(name)) {
-            i++;
-            name = baseName + i;
+        // 仅当基地尚无名称时生成唯一名称；重新放置已有名称的基地时保留原名
+        if (entityData.getName().isEmpty()) {
+            entityData.setName(dev.anye.mc.basecore.basecore.BasecoreServerHelper.getUniqueBaseName(playerName));
         }
-        entityData.setName(name);
         updateToClient();
     }
 
@@ -147,11 +146,13 @@ public class BaseCoreBlockEntity extends ToDamageBlockEntity<BasecoreModuleItem>
 
     public void damage(int health) {
         entityData.addHealth(-health);
+        super.setChanged();
         updateToClient();
     }
 
     public void setHealth(int health) {
         entityData.setHealth(health);
+        super.setChanged();
         updateToClient();
     }
 
@@ -161,6 +162,7 @@ public class BaseCoreBlockEntity extends ToDamageBlockEntity<BasecoreModuleItem>
 
     public void addHealth(int health) {
         entityData.addHealth(health);
+        super.setChanged();
         updateToClient();
     }
 
@@ -230,10 +232,13 @@ public class BaseCoreBlockEntity extends ToDamageBlockEntity<BasecoreModuleItem>
 
     @Override
     public void loadAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
+        loading = true;
         super.loadAdditional(pTag, pRegistries);
+        loading = false;
         if (pTag.hasUUID("owner")) owner = pTag.getUUID("owner");
         entityData.handle(pTag);
         itemChange();
+        updateToClient();
     }
 
     @Override

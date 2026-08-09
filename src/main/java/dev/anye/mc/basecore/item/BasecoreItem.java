@@ -28,15 +28,7 @@ public class BasecoreItem extends BlockItem {
     @Override
     public @NotNull InteractionResult useOn(UseOnContext pContext) {
         if (pContext.getPlayer() instanceof ServerPlayer serverPlayer) {
-            CustomData blockEntityData = pContext.getItemInHand().get(DataComponents.BLOCK_ENTITY_DATA);
-            CompoundTag compoundTag = blockEntityData != null ? blockEntityData.copyTag() : null;
-            if (compoundTag != null && compoundTag.hasUUID(BaseCoreBlock.OWNER_KEY)) {
-                if (!compoundTag.getUUID(BaseCoreBlock.OWNER_KEY).equals(serverPlayer.getUUID())) {
-                    serverPlayer.hurt(serverPlayer.damageSources().fellOutOfWorld(), 2.0f);
-                    return InteractionResult.FAIL;
-                }
-            }
-            // Start 30s placement
+            // Start 30s placement (ownership is verified inside PlacementHelper)
             if (PlacementHelper.startPlacement(serverPlayer, pContext, pContext.getItemInHand(), BlockRegister.BASE_CORE.get())) {
                 return InteractionResult.SUCCESS;
             }

@@ -158,7 +158,7 @@ BaseCore 是一款面向 Minecraft 1.21.1（NeoForge）的基地建设与防御�
 ## 安装方法
 
 1. 确保已安装 **Minecraft 1.21.1** 与对应版本的 **NeoForge** 启动器。
-2. 下载 `basecore-1.0.3.jar`。
+2. 下载 `basecore-1.0.5.jar`。
 3. 将 JAR 文件放入游戏目录下的 `mods` 文件夹。
 4. 启动游戏，在创造模式物品栏的“基地核心”标签页或 JEI/EMI 中查看所有物品。
 
@@ -175,7 +175,63 @@ BaseCore 是一款面向 Minecraft 1.21.1（NeoForge）的基地建设与防御�
 ./gradlew runData
 ```
 
-构建产物位于 `build/libs/basecore-1.0.3.jar`。
+构建产物位于 `build/libs/basecore-1.0.5.jar`。
+
+---
+
+## 扩展开发（社区 API）
+
+BaseCore 预留了公共扩展 API，社区模组可以轻松地向"零件升级"界面注册自定义升级项，无需修改 basecore 本体。
+
+### 依赖方式
+
+在 `build.gradle` 的 `dependencies` 中添加 basecore 依赖，即可访问 `dev.anye.mc.basecore.api` 包。
+
+### 注册自定义升级
+
+```java
+import dev.anye.mc.basecore.api.BasecoreUpgradeApi;
+import dev.anye.mc.basecore.api.UpgradeDefinition;
+
+public class YourMod {
+    public YourMod(IEventBus modEventBus) {
+        // 注册一个仅在基地核心升级界面出现的模块，售价 200 零件
+        BasecoreUpgradeApi.registerUpgrade(new UpgradeDefinition(
+                ItemRegister.MyModule::get,
+                () -> 200
+        ));
+
+        // 同时出现在基地核心与防御炮界面
+        BasecoreUpgradeApi.registerUpgrade(new UpgradeDefinition(
+                ItemRegister.MyModule::get,
+                () -> 300,
+                true, true
+        ));
+    }
+}
+```
+
+### 自定义模块物品
+
+模块物品必须继承 `BasecoreModuleItem` 才能被基地核心识别并生效：
+
+- 重写 `range(int count)` / `health(int count)` 提供范围、生命加成；
+- 重写 `tick(...)` 实现每 tick 生效的效果（如状态效果、自动修复）；
+- 构造时指定 `maxLevel`，即基地核心中的最大等级。
+
+### 自定义防御炮模块上限
+
+默认防御炮中模块上限为 4，可通过 API 覆盖（含内置模块），需在物品注册完成后调用：
+
+```java
+BasecoreUpgradeApi.setDefendModuleMax(ItemRegister.MyModule.get(), 2);
+```
+
+### 注意事项
+
+- 升级项通过 `Supplier` 延迟解析模块物品，可在模组构造阶段注册；
+- 防御炮的效果逻辑在 `DefendBlockEntity` 中实现，若自定义模块需要防御炮专属效果，请参考内置模块自行处理；
+- 零件售价支持 `IntSupplier` 动态计算（例如读取配置文件）。
 
 ---
 

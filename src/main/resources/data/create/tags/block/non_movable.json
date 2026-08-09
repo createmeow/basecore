@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "basecore:basecore",
+    "basecore:defend",
+    "basecore:damage",
+    "basecore:hash_chest",
+    "basecore:nothing",
+    "basecore:placeholder"
+  ]
+}

@@ -13,8 +13,8 @@ import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 public class ItemUseProgressRenderer {
     private static final int BAR_WIDTH = 120;
     private static final int BAR_HEIGHT = 3;
-    private static final int BAR_BG_COLOR = 0xFF404040;
-    private static final int BAR_FG_COLOR = 0xFF00AA00;
+    private static final int BAR_BG_COLOR = 0x5E000000; // RGBA: 0000005e → ARGB
+    private static final int BAR_FG_COLOR = 0xFF00b0ff; // RGBA: 00b0ffff → ARGB
 
     public static final LayeredDraw.Layer USE_PROGRESS_LAYER = (guiGraphics, deltaTracker) -> {
         Minecraft mc = Minecraft.getInstance();
@@ -42,7 +42,7 @@ public class ItemUseProgressRenderer {
         int y = guiGraphics.guiHeight() - 80;
 
         String name = useItem.getHoverName().getString();
-        guiGraphics.drawCenteredString(mc.font, name, cx, y - 12, 0xffffff00);
+        guiGraphics.drawCenteredString(mc.font, "使用 " + name, cx, y - 12, 0xFFFFFFFF);
 
         guiGraphics.fill(x, y, x + BAR_WIDTH, y + BAR_HEIGHT, BAR_BG_COLOR);
         int barWidth = (int) (BAR_WIDTH * progress);
@@ -50,7 +50,7 @@ public class ItemUseProgressRenderer {
 
         String progressText = (int) (progress * 100) + "%";
         int textWidth = mc.font.width(progressText);
-        guiGraphics.drawString(mc.font, progressText, cx - textWidth / 2, y + 5, 0xffffff00);
+        guiGraphics.drawString(mc.font, progressText, cx - textWidth / 2, y + 5, 0xFFFFFFFF);
 
         RenderSystem.disableBlend();
     };

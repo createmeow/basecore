@@ -112,6 +112,9 @@
 
   "basecore.basecore.discern": "A nearby basecore has seen through your disguise.",
 
+  "death.attack.cannon_shot": "%1$s was shelled",
+  "death.attack.cannon_shot.player": "%1$s was shelled by %2$s's turret",
+
   "error.basecore.parts.insufficient": "§4Insufficient parts",
   "error.basecore.upgrade.no_space": "§4Base core inventory full, cannot place upgrade module",
   "error.basecore.upgrade.max_level": "§4This module has reached the maximum level",
