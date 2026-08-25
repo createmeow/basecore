@@ -38,4 +38,13 @@ public abstract class BaseModuleItem extends EasyItem {
     public int getDefendMaxCount() {
         return 0;
     }
+
+    /**
+     * Module items render their own description + "适用于" section in the hover text,
+     * so we disable the generic {@link EasyItem} description to avoid duplicates.
+     */
+    @Override
+    protected boolean shouldAddHoverDescription() {
+        return false;
+    }
 }

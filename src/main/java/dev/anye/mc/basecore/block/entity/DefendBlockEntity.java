@@ -37,6 +37,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.particles.SimpleParticleType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -202,15 +203,27 @@ public class DefendBlockEntity extends ToDamageBlockEntity<BaseModuleItem> imple
         double distance = direction.length();
         if (distance <= 0) return;
         Vec3 normalized = direction.normalize();
-        int steps = (int) (distance / 0.5d);
-        for (int i = 0; i < steps; i++) {
+
+        // 激光主体：每 0.5 格绘制 FLAME 粒子
+        int flameSteps = (int) (distance / 0.5d);
+        for (int i = 0; i < flameSteps; i++) {
             double progress = i * 0.5d + 0.25d;
-            Vec3 pos = start.add(normalized.scale(progress));
-            if (target != null) {
-                level.sendParticles(target, ParticleTypes.FLAME, false, pos.x, pos.y, pos.z, 1, 0, 0, 0, 0);
-            } else {
-                level.getPlayers(p -> true).forEach(p -> level.sendParticles(p, ParticleTypes.FLAME, false, pos.x, pos.y, pos.z, 1, 0, 0, 0, 0));
-            }
+            sendBeamParticle(level, target, start.add(normalized.scale(progress)), ParticleTypes.FLAME);
+        }
+
+        // 溅射烟雾：每 1 格额外生成 CAMPFIRE_COSY_SMOKE 粒子，营造激光溅射感
+        int smokeSteps = (int) (distance / 1.0d);
+        for (int i = 0; i < smokeSteps; i++) {
+            double progress = i * 1.0d + 0.5d;
+            sendBeamParticle(level, target, start.add(normalized.scale(progress)), ParticleTypes.CAMPFIRE_COSY_SMOKE);
+        }
+    }
+
+    private static void sendBeamParticle(ServerLevel level, @Nullable ServerPlayer target, Vec3 pos, SimpleParticleType particleType) {
+        if (target != null) {
+            level.sendParticles(target, particleType, false, pos.x, pos.y, pos.z, 1, 0, 0, 0, 0);
+        } else {
+            level.getPlayers(p -> true).forEach(p -> level.sendParticles(p, particleType, false, pos.x, pos.y, pos.z, 1, 0, 0, 0, 0));
         }
     }
 
