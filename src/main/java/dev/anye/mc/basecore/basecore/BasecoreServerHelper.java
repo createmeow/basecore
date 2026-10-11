@@ -67,7 +67,7 @@ public class BasecoreServerHelper {
     public static boolean check(Level level, BlockPos blockPos, net.minecraft.world.item.ItemStack itemStack) {
         for (BaseCoreBlockEntity baseCoreBlockEntity : BASECORE_BLOCK_ENTITIES) {
             AABB existingBox = getRangeBox(baseCoreBlockEntity.getBlockPos(), baseCoreBlockEntity.getRange());
-            if (existingBox.intersects(getRangeBox(blockPos, BasecoreBlockEntityData.DefaultRange))) {
+            if (existingBox.intersects(getRangeBox(blockPos, dev.anye.mc.basecore.config.BasecoreConfig.getBasecoreRange()))) {
                 return false;
             }
         }

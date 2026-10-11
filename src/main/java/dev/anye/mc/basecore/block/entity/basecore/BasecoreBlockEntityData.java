@@ -1,5 +1,6 @@
 package dev.anye.mc.basecore.block.entity.basecore;
 
+import dev.anye.mc.basecore.config.BasecoreConfig;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
 
@@ -7,11 +8,12 @@ import java.util.*;
 
 @SuppressWarnings("all")
 public class BasecoreBlockEntityData {
+    /** 兼容保留的硬编码默认值，实际默认范围以配置文件 balance.basecore_range 为准 */
     public static final int DefaultRange = 10;
     private static final int DefaultHealth = 500;
     private int health = DefaultHealth;
     private int maxHealth = DefaultHealth;
-    private int range = DefaultRange;
+    private int range = BasecoreConfig.getBasecoreRange();
     private String name = "";
     private String ownerName = "";
     private int interferenceTime = 0;
@@ -158,7 +160,7 @@ public class BasecoreBlockEntityData {
     public int getRange() { return range; }
     public void setRange(int range) { this.range = Math.max(0, range); }
     public void addRange(int range) { this.range += range; }
-    public void setDefaultRange() { this.range = DefaultRange; }
+    public void setDefaultRange() { this.range = BasecoreConfig.getBasecoreRange(); }
 
     // ----- Health -----
     public int getHealth() { return health; }

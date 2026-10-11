@@ -138,6 +138,11 @@ BaseCore 是一款面向 Minecraft 1.21.1（NeoForge）的基地建设与防御�
 | `gameplay` | 游戏模式：`modular` 或 `component` |
 | `part_death_drop_percent` | 死亡时掉落零件的百分比 |
 | `upgrades.*_cost` | 各模块/升级的零件消耗数量 |
+| `balance.basecore_range` | 基地核心的默认作用范围（默认 10） |
+| `balance.defend_range` | 防御炮的默认攻击范围（默认 15） |
+| `balance.defend_health` | 防御炮的默认生命值（默认 50） |
+| `balance.defend_damage` | 防御炮的基础伤害（默认 4.0） |
+| `balance.defend_attack_interval` | 防御炮的攻击间隔（单位：tick，默认 80，即每 4 秒攻击一次） |
 
 示例：
 
@@ -145,6 +150,13 @@ BaseCore 是一款面向 Minecraft 1.21.1（NeoForge）的基地建设与防御�
 {
   "gameplay": "modular",
   "part_death_drop_percent": 10,
+  "balance": {
+    "basecore_range": 10,
+    "defend_range": 15,
+    "defend_health": 50,
+    "defend_damage": 4.0,
+    "defend_attack_interval": 80
+  },
   "upgrades": {
     "range_cost": 64,
     "defense_cost": 128,
@@ -158,9 +170,9 @@ BaseCore 是一款面向 Minecraft 1.21.1（NeoForge）的基地建设与防御�
 ## 安装方法
 
 1. 确保已安装 **Minecraft 1.21.1** 与对应版本的 **NeoForge** 启动器。
-2. 下载 `basecore-1.0.6.jar`。
+2. 下载 `basecore-1.0.7-Pre.jar`。
 3. 将 JAR 文件放入游戏目录下的 `mods` 文件夹。
-4. 启动游戏，在创造模式物品栏的"基地核心"标签页或 JEI/EMI 中查看所有物品。
+4. 启动游戏，在创造模式物品栏的“基地核心”标签页或 JEI/EMI 中查看所有物品。
 
 ---
 
@@ -175,7 +187,7 @@ BaseCore 是一款面向 Minecraft 1.21.1（NeoForge）的基地建设与防御�
 ./gradlew runData
 ```
 
-构建产物位于 `build/libs/basecore-1.0.6.jar`。
+构建产物位于 `build/libs/basecore-1.0.7-Pre.jar`。
 
 ---
 

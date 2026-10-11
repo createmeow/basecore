@@ -46,13 +46,13 @@ public class DefendBlockEntity extends ToDamageBlockEntity<BaseModuleItem> imple
     private static final int inventorySize = 27;
     private static final ResourceKey<DamageType> CANNON_SHOT = ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(BaseCore.MOD_ID, "cannon_shot"));
     private UUID owner;
-    private int range = 15;
-    private int health = 50;
-    private int maxHealth = 50;
+    private int range = dev.anye.mc.basecore.config.BasecoreConfig.getDefendRange();
+    private int health = dev.anye.mc.basecore.config.BasecoreConfig.getDefendHealth();
+    private int maxHealth = dev.anye.mc.basecore.config.BasecoreConfig.getDefendHealth();
     private int invincibleTime = 0;
     private int attackTick = 0;
     private int type = 1;
-    private float amount = 4f;
+    private float amount = dev.anye.mc.basecore.config.BasecoreConfig.getDefendDamage();
     private int showHealthTick = 0;
     private boolean hasThorns = false;
     private int autoRepairCount = 0;
@@ -248,7 +248,7 @@ public class DefendBlockEntity extends ToDamageBlockEntity<BaseModuleItem> imple
             } else autoRepairTick++;
         }
 
-        if (attackTick >= 80) {
+        if (attackTick >= dev.anye.mc.basecore.config.BasecoreConfig.getDefendAttackInterval()) {
             attackTick = 0;
 
             float dmg = amount;
@@ -318,9 +318,9 @@ public class DefendBlockEntity extends ToDamageBlockEntity<BaseModuleItem> imple
     }
 
     private void itemChange() {
-        range = 15;
-        maxHealth = 50;
-        amount = 4f;
+        range = dev.anye.mc.basecore.config.BasecoreConfig.getDefendRange();
+        maxHealth = dev.anye.mc.basecore.config.BasecoreConfig.getDefendHealth();
+        amount = dev.anye.mc.basecore.config.BasecoreConfig.getDefendDamage();
         hasThorns = false;
         autoRepairCount = 0;
 
@@ -348,7 +348,7 @@ public class DefendBlockEntity extends ToDamageBlockEntity<BaseModuleItem> imple
 
         range += rangeCount * 3;
         maxHealth += defCount * 50;
-        amount = 4 + strengthCount * 2;
+        amount += strengthCount * 2;
     }
 
     @Override
@@ -360,9 +360,9 @@ public class DefendBlockEntity extends ToDamageBlockEntity<BaseModuleItem> imple
     @Override
     public void loadAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
         super.loadAdditional(pTag, pRegistries);
-        range = pTag.contains("range") ? pTag.getInt("range") : 15;
-        health = pTag.contains("health") ? pTag.getInt("health") : 50;
-        maxHealth = pTag.contains("max_health") ? pTag.getInt("max_health") : 50;
+        range = pTag.contains("range") ? pTag.getInt("range") : dev.anye.mc.basecore.config.BasecoreConfig.getDefendRange();
+        health = pTag.contains("health") ? pTag.getInt("health") : dev.anye.mc.basecore.config.BasecoreConfig.getDefendHealth();
+        maxHealth = pTag.contains("max_health") ? pTag.getInt("max_health") : dev.anye.mc.basecore.config.BasecoreConfig.getDefendHealth();
         attackTick = pTag.getInt("tick");
         type = pTag.contains("type") ? pTag.getInt("type") : 1;
         showHealthTick = pTag.getInt("showHealthTick");

@@ -30,6 +30,32 @@ public class BasecoreConfig {
     @SerializedName("upgrades")
     private UpgradeCosts upgrades = new UpgradeCosts();
 
+    @Expose
+    @SerializedName("balance")
+    private BalanceSettings balance = new BalanceSettings();
+
+    public static class BalanceSettings {
+        @Expose
+        @SerializedName("basecore_range")
+        public int basecoreRange = 10;
+
+        @Expose
+        @SerializedName("defend_range")
+        public int defendRange = 15;
+
+        @Expose
+        @SerializedName("defend_health")
+        public int defendHealth = 50;
+
+        @Expose
+        @SerializedName("defend_damage")
+        public float defendDamage = 4.0f;
+
+        @Expose
+        @SerializedName("defend_attack_interval")
+        public int defendAttackInterval = 80;
+    }
+
     public static class UpgradeCosts {
         @Expose
         @SerializedName("range_cost")
@@ -271,6 +297,34 @@ public class BasecoreConfig {
     public static int getUpgradeDefendAutoRepairCost() {
         ensureLoaded();
         return INSTANCE.upgrades.defendAutoRepairCost;
+    }
+
+    // ----- Balance settings -----
+
+    public static int getBasecoreRange() {
+        ensureLoaded();
+        return Math.max(0, INSTANCE.balance.basecoreRange);
+    }
+
+    public static int getDefendRange() {
+        ensureLoaded();
+        return Math.max(0, INSTANCE.balance.defendRange);
+    }
+
+    public static int getDefendHealth() {
+        ensureLoaded();
+        return Math.max(1, INSTANCE.balance.defendHealth);
+    }
+
+    public static float getDefendDamage() {
+        ensureLoaded();
+        return Math.max(0.0f, INSTANCE.balance.defendDamage);
+    }
+
+    /** 攻击间隔（tick），最小 1 tick */
+    public static int getDefendAttackInterval() {
+        ensureLoaded();
+        return Math.max(1, INSTANCE.balance.defendAttackInterval);
     }
 
     private static void ensureLoaded() {
