@@ -81,7 +81,7 @@ public class EasyNetRegister {
             (payload, context) -> {
                 context.enqueueWork(() -> {
                     dev.anye.mc.basecore.client.data.ClientPlacementData.INSTANCE.update(
-                        payload.remainingTicks(), payload.displayName());
+                        payload.remainingTicks(), payload.displayName(), payload.totalTicks());
                 });
             }
         );

@@ -13,6 +13,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BasecoreConfig {
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -54,6 +56,46 @@ public class BasecoreConfig {
         @Expose
         @SerializedName("defend_attack_interval")
         public int defendAttackInterval = 80;
+
+        /** 机械部署/升级时长（秒），默认 30 秒保持原有玩法 */
+        @Expose
+        @SerializedName("placement_seconds")
+        public int placementSeconds = 30;
+
+        /** 怪物攻击基地核心（占点玩法），默认关闭 */
+        @Expose
+        @SerializedName("monster_attack_core")
+        public boolean monsterAttackCore = false;
+
+        /** 怪物每次攻击对核心造成的伤害，仅在 monster_attack_core 开启时生效 */
+        @Expose
+        @SerializedName("monster_core_damage")
+        public float monsterCoreDamage = 2.0f;
+
+        /** 怪物破坏核心时一轮裂纹积累的总时长（秒），默认 2 秒 */
+        @Expose
+        @SerializedName("monster_crack_seconds")
+        public int monsterCrackSeconds = 2;
+
+        /** 同时攻击核心的最大怪物数量，默认 10 */
+        @Expose
+        @SerializedName("monster_attack_max_count")
+        public int monsterAttackMaxCount = 10;
+
+        /** 怪物可感知核心的距离（格），范围内的怪物会仇恨并走向核心，默认 32 */
+        @Expose
+        @SerializedName("monster_sense_range")
+        public int monsterSenseRange = 32;
+
+        /** 怪物名单模式：all = 所有怪物（默认）；whitelist = 仅名单内；blacklist = 名单外 */
+        @Expose
+        @SerializedName("monster_attack_list_mode")
+        public String monsterAttackListMode = "all";
+
+        /** 怪物实体 ID 名单，如 "minecraft:zombie"、"minecraft:skeleton" */
+        @Expose
+        @SerializedName("monster_attack_list")
+        public List<String> monsterAttackList = new ArrayList<>();
     }
 
     public static class UpgradeCosts {
@@ -325,6 +367,53 @@ public class BasecoreConfig {
     public static int getDefendAttackInterval() {
         ensureLoaded();
         return Math.max(1, INSTANCE.balance.defendAttackInterval);
+    }
+
+    /** 机械部署/升级时长（tick），最小 1 tick */
+    public static int getPlacementTicks() {
+        ensureLoaded();
+        return Math.max(1, INSTANCE.balance.placementSeconds * 20);
+    }
+
+    public static boolean isMonsterAttackCore() {
+        ensureLoaded();
+        return INSTANCE.balance.monsterAttackCore;
+    }
+
+    public static float getMonsterCoreDamage() {
+        ensureLoaded();
+        return Math.max(0.0f, INSTANCE.balance.monsterCoreDamage);
+    }
+
+    /** 怪物破坏核心一轮裂纹积累的总时长（tick），最小 1 tick */
+    public static int getMonsterCrackTicks() {
+        ensureLoaded();
+        return Math.max(1, INSTANCE.balance.monsterCrackSeconds * 20);
+    }
+
+    /** 同时攻击核心的最大怪物数量，最小 1 */
+    public static int getMonsterAttackMaxCount() {
+        ensureLoaded();
+        return Math.max(1, INSTANCE.balance.monsterAttackMaxCount);
+    }
+
+    /** 怪物可感知核心的距离（格），最小 1 */
+    public static int getMonsterSenseRange() {
+        ensureLoaded();
+        return Math.max(1, INSTANCE.balance.monsterSenseRange);
+    }
+
+    /** 判断指定怪物是否会攻击核心（按 monster_attack_list_mode / monster_attack_list 过滤） */
+    public static boolean shouldMonsterAttackCore(net.minecraft.world.entity.Entity entity) {
+        ensureLoaded();
+        String mode = INSTANCE.balance.monsterAttackListMode == null
+                ? "all" : INSTANCE.balance.monsterAttackListMode.trim().toLowerCase(java.util.Locale.ROOT);
+        if ("whitelist".equals(mode) || "blacklist".equals(mode)) {
+            String id = net.minecraft.world.entity.EntityType.getKey(entity.getType()).toString();
+            boolean inList = INSTANCE.balance.monsterAttackList != null && INSTANCE.balance.monsterAttackList.contains(id);
+            return "whitelist".equals(mode) == inList;
+        }
+        return true; // all
     }
 
     private static void ensureLoaded() {

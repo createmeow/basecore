@@ -27,8 +27,8 @@ public class PlaceholderBlockEntity extends BlockEntity {
     private ItemStack returnStack = ItemStack.EMPTY;
     private String targetBlockId;      // e.g. "basecore:basecore"
     private String displayName;         // for HUD
-    private int remainingTicks = 600;   // 30 seconds
-    private static final int TOTAL_TICKS = 600;
+    private int remainingTicks = 600;   // 30 seconds (default, actual duration from config)
+    private int totalTicks = 600;
     private static final double MAX_DISTANCE_SQ = 4.4 * 4.4; // 4.4 blocks radius squared
 
     public PlaceholderBlockEntity(BlockPos pPos, BlockState pBlockState) {
@@ -42,7 +42,8 @@ public class PlaceholderBlockEntity extends BlockEntity {
         this.returnStack.setCount(1);
         this.targetBlockId = blockId;
         this.displayName = name;
-        this.remainingTicks = TOTAL_TICKS;
+        this.totalTicks = dev.anye.mc.basecore.config.BasecoreConfig.getPlacementTicks();
+        this.remainingTicks = this.totalTicks;
         dev.anye.mc.basecore.event.ForgeEvent.ACTIVE_PLACEMENTS.put(placer, worldPosition);
         setChanged();
         syncToClient();
@@ -213,7 +214,7 @@ public class PlaceholderBlockEntity extends BlockEntity {
             Player player = serverLevel.getPlayerByUUID(placerUUID);
             if (player instanceof ServerPlayer serverPlayer) {
                 PacketDistributor.sendToPlayer(serverPlayer,
-                        new PlacementProgressPayload(ticks, displayName));
+                        new PlacementProgressPayload(ticks, displayName, totalTicks));
             }
         }
     }
@@ -229,6 +230,7 @@ public class PlaceholderBlockEntity extends BlockEntity {
             tag.put("return_stack", returnStack.save(registries));
         }
         tag.putInt("ticks", remainingTicks);
+        tag.putInt("total_ticks", totalTicks);
     }
 
     @Override
@@ -242,6 +244,8 @@ public class PlaceholderBlockEntity extends BlockEntity {
             returnStack = ItemStack.parse(registries, tag.getCompound("return_stack")).orElse(ItemStack.EMPTY);
         }
         if (tag.contains("ticks")) remainingTicks = tag.getInt("ticks");
+        if (tag.contains("total_ticks")) totalTicks = tag.getInt("total_ticks");
+        else totalTicks = dev.anye.mc.basecore.config.BasecoreConfig.getPlacementTicks();
         if (placerUUID != null) {
             dev.anye.mc.basecore.event.ForgeEvent.ACTIVE_PLACEMENTS.put(placerUUID, worldPosition);
         }

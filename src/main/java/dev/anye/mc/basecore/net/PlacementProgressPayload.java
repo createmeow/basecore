@@ -11,8 +11,9 @@ import org.jetbrains.annotations.NotNull;
  * S2C payload to sync placement progress to the client.
  * @param remainingTicks >0 = progress update, 0 = completed, -1 = cancelled
  * @param displayName The block name to display on the HUD
+ * @param totalTicks Total duration in ticks, used to compute progress percentage
  */
-public record PlacementProgressPayload(int remainingTicks, String displayName) implements CustomPacketPayload {
+public record PlacementProgressPayload(int remainingTicks, String displayName, int totalTicks) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<PlacementProgressPayload> TYPE =
             new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(BaseCore.MOD_ID, "placement_progress"));
 
@@ -20,13 +21,14 @@ public record PlacementProgressPayload(int remainingTicks, String displayName) i
             new StreamCodec<>() {
                 @Override
                 public @NotNull PlacementProgressPayload decode(RegistryFriendlyByteBuf buf) {
-                    return new PlacementProgressPayload(buf.readInt(), buf.readUtf(256));
+                    return new PlacementProgressPayload(buf.readInt(), buf.readUtf(256), buf.readInt());
                 }
 
                 @Override
                 public void encode(RegistryFriendlyByteBuf buf, PlacementProgressPayload value) {
                     buf.writeInt(value.remainingTicks);
                     buf.writeUtf(value.displayName, 256);
+                    buf.writeInt(value.totalTicks);
                 }
             };
 

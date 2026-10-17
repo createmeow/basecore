@@ -73,7 +73,8 @@ public class ForgeEvent {
             event.getChunk().getBlockEntitiesPos().forEach(blockPos -> {
                 event.getChunk().getBlockEntity(blockPos,BlockEntityRegister.BASECORE.get()).ifPresent(BasecoreServerHelper::addEntity);
             });
-            BasecoreServerHelper.upToClient();
+            // 只做脏标记，由服务器 tick 去重后统一同步（每个区块事件都全量同步会造成进入存档时的卡顿风暴）
+            BasecoreServerHelper.markDirty();
         }
     }
     @SubscribeEvent
@@ -82,8 +83,19 @@ public class ForgeEvent {
             event.getChunk().getBlockEntitiesPos().forEach(blockPos -> {
                 event.getChunk().getBlockEntity(blockPos,BlockEntityRegister.BASECORE.get()).ifPresent(BasecoreServerHelper::delEntity);
             });
-            BasecoreServerHelper.upToClient();
+            BasecoreServerHelper.markDirty();
         }
+    }
+
+    @SubscribeEvent
+    public static void onServerTick(net.neoforged.neoforge.event.tick.ServerTickEvent.Post event) {
+        BasecoreServerHelper.flushSync();
+    }
+
+    @SubscribeEvent
+    public static void onServerStopped(net.neoforged.neoforge.event.server.ServerStoppedEvent event) {
+        // 单人环境重进存档时静态注册表不会自动清理，必须在服务器停止时清空，防止幽灵核心累积
+        BasecoreServerHelper.clear();
     }
 
     @SubscribeEvent

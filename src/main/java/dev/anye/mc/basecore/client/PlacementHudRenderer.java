@@ -30,7 +30,7 @@ public class PlacementHudRenderer {
         int remaining = data.remainingTicks;
         String name = data.displayName;
 
-        int totalTicks = 600;
+        int totalTicks = Math.max(1, data.totalTicks);
         float progress;
         if (remaining <= 0) {
             progress = 1.0f;

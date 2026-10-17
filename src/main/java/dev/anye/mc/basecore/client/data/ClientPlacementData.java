@@ -8,12 +8,14 @@ public class ClientPlacementData {
 
     public boolean active = false;
     public int remainingTicks = 0;
+    public int totalTicks = 600;
     public String displayName = "";
 
-    public void update(int remainingTicks, String displayName) {
+    public void update(int remainingTicks, String displayName, int totalTicks) {
         this.active = remainingTicks > 0;
         this.remainingTicks = remainingTicks;
         this.displayName = displayName;
+        if (totalTicks > 0) this.totalTicks = totalTicks;
     }
 
     public void reset() {

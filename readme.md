@@ -143,6 +143,14 @@ BaseCore 是一款面向 Minecraft 1.21.1（NeoForge）的基地建设与防御�
 | `balance.defend_health` | 防御炮的默认生命值（默认 50） |
 | `balance.defend_damage` | 防御炮的基础伤害（默认 4.0） |
 | `balance.defend_attack_interval` | 防御炮的攻击间隔（单位：tick，默认 80，即每 4 秒攻击一次） |
+| `balance.placement_seconds` | 机械部署/升级所需时长（单位：秒，默认 30） |
+| `balance.monster_attack_core` | 怪物攻击基地核心（占点玩法，默认 `false` 关闭，不影响原有玩法） |
+| `balance.monster_core_damage` | 裂纹积累满一轮后怪物对核心造成的伤害（默认 2.0，仅在 `monster_attack_core` 开启时生效） |
+| `balance.monster_crack_seconds` | 怪物破坏核心时一轮裂纹积累的总时长（单位：秒，默认 2） |
+| `balance.monster_attack_max_count` | 同时攻核的最大怪物数量（默认 10，每只独立积累裂纹并独立扣血） |
+| `balance.monster_sense_range` | 怪物可感知核心的距离（单位：格，默认 32，范围内的怪物会仇恨并走向核心） |
+| `balance.monster_attack_list_mode` | 怪物名单模式：`all`（默认，所有怪物）/ `whitelist`（仅名单内）/ `blacklist`（名单外） |
+| `balance.monster_attack_list` | 怪物实体 ID 名单，如 `["minecraft:zombie", "minecraft:skeleton"]`，仅在 whitelist/blacklist 模式下生效 |
 
 示例：
 
@@ -155,7 +163,10 @@ BaseCore 是一款面向 Minecraft 1.21.1（NeoForge）的基地建设与防御�
     "defend_range": 15,
     "defend_health": 50,
     "defend_damage": 4.0,
-    "defend_attack_interval": 80
+    "defend_attack_interval": 80,
+    "placement_seconds": 30,
+    "monster_attack_core": false,
+    "monster_core_damage": 2.0
   },
   "upgrades": {
     "range_cost": 64,
@@ -164,6 +175,23 @@ BaseCore 是一款面向 Minecraft 1.21.1（NeoForge）的基地建设与防御�
   }
 }
 ```
+
+### 怪物攻击核心（可选玩法）
+
+`balance.monster_attack_core` 开启后（占点/保卫类玩法）：
+
+- 位于核心感知范围内（`monster_sense_range`，默认 32 格）的怪物会仇恨核心，主动向核心移动；
+- 最多 `monster_attack_max_count`（默认 10）只怪物可**同时**攻核，每只独立积累裂纹、独立扣血；
+- 怪物贴近核心（3 格内）后开始对核心施加裂纹（类似原版挖掘裂纹，一轮总时长由 `monster_crack_seconds` 配置，默认约 2 秒）；
+- **裂纹满 → 对核心造成 `balance.monster_core_damage` 点伤害 → 裂纹清空 → 重新积累**，如此循环直到核心血量归零被摧毁；
+- 怪物离开后裂纹立即清空并重置进度；
+- 可通过 `monster_attack_list_mode` + `monster_attack_list` 控制哪些怪物参与攻击，例如白名单只允许僵尸和苦力怕：
+  ```json
+  "monster_attack_list_mode": "whitelist",
+  "monster_attack_list": ["minecraft:zombie", "minecraft:creeper"]
+  ```
+- 核心血量归零时按原有核心被破坏逻辑处理；
+- 默认关闭，关闭时怪物行为与原版完全一致。
 
 ---
 
