@@ -39,6 +39,12 @@ public class ProtectionSignalShieldItem extends EasyItem {
                     return InteractionResultHolder.fail(itemStack);
                 }
                 itemStack.shrink(1);
+                // 苏式基地计算机抗干扰能力强，干扰只有 50% 概率生效
+                if (baseCoreBlockEntity instanceof dev.anye.mc.basecore.block.soviet_computer.SovietComputerBlockEntity
+                        && !RANDOM.nextBoolean()) {
+                    serverPlayer.sendSystemMessage(Component.translatable("error.basecore.pssi.failed"));
+                    return InteractionResultHolder.success(itemStack);
+                }
                 baseCoreBlockEntity.getEntityData().setInterferenceTime(6000);
                 baseCoreBlockEntity.updateToClient();
                 giveRandomItems(serverPlayer);

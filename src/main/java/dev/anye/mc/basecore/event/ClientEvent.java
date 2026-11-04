@@ -11,6 +11,7 @@ import dev.anye.mc.basecore.screen.BaseCoreScreen;
 import dev.anye.mc.basecore.screen.BasecoreUpgradeScreen;
 import dev.anye.mc.basecore.screen.DefendScreen;
 import dev.anye.mc.basecore.screen.HashChestScreen;
+import dev.anye.mc.basecore.screen.SovietComputerScreen;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -28,10 +29,13 @@ public class ClientEvent {
         event.register(MenuTypeRegister.DEFEND_MENU.get(), DefendScreen::new);
         event.register(MenuTypeRegister.HashChest.get(), HashChestScreen::new);
         event.register(MenuTypeRegister.BASECORE_UPGRADE_MENU.get(), BasecoreUpgradeScreen::new);
+        event.register(MenuTypeRegister.SOVIET_COMPUTER_MENU.get(), SovietComputerScreen::new);
     }
     @SubscribeEvent
     public static void register(EntityRenderersEvent.RegisterRenderers event){
         event.registerBlockEntityRenderer(BlockEntityRegister.BASECORE.get(), BasecoreBlockEntityRender::new);
+        // 苏式基地计算机同样需要绘制范围框（黄色）
+        event.registerBlockEntityRenderer(BlockEntityRegister.SOVIET_COMPUTER.get(), BasecoreBlockEntityRender::new);
         event.registerEntityRenderer(EntityTypeRegister.ElectromagneticPulseBomb.get(), ThrownItemRenderer::new);
     }
     @SubscribeEvent

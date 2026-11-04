@@ -1,0 +1,6 @@
+{
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "basecore:block/soviet_computer_casing"
+  }
+}

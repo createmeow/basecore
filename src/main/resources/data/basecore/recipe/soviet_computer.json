@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "minecraft:copper_block"
+    },
+    "D": {
+      "item": "minecraft:diamond_block"
+    },
+    "E": {
+      "item": "minecraft:redstone_block"
+    },
+    "G": {
+      "item": "minecraft:gold_block"
+    },
+    "I": {
+      "item": "minecraft:iron_block"
+    },
+    "T": {
+      "item": "basecore:ternary_integrated_circuit"
+    }
+  },
+  "pattern": [
+    "IGD",
+    "TET",
+    "TCT"
+  ],
+  "result": {
+    "count": 1,
+    "id": "basecore:soviet_computer"
+  }
+}

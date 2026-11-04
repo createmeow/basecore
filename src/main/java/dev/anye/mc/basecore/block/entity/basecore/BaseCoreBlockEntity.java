@@ -39,9 +39,23 @@ public class BaseCoreBlockEntity extends ToDamageBlockEntity<BasecoreModuleItem>
     protected final ContainerData data;
     /** True while {@link #loadAdditional} is running; suppresses {@link #setChanged()} side effects. */
     private boolean loading = false;
+    /** 当前能源（Rs）。 */
+    private int energy = 0;
+    /** 距下一次扣除 1 Rs 的 tick 数。 */
+    private int energyTick = 0;
+    /** 距下一次尝试补充能源的 tick 数。 */
+    private int refuelTick = 0;
+    /** 当前能源是否足以继续运行。 */
+    private boolean energyPowered = false;
 
     public BaseCoreBlockEntity(BlockPos pPos, BlockState pBlockState) {
-        super(BlockEntityRegister.BASECORE.get(), pPos, pBlockState, inventorySize);
+        this(BlockEntityRegister.BASECORE.get(), pPos, pBlockState, inventorySize);
+    }
+
+    /** 供继承的多方块控制器（如苏式基地计算机）复用基地核心逻辑。 */
+    protected BaseCoreBlockEntity(net.minecraft.world.level.block.entity.BlockEntityType<?> type,
+                                  BlockPos pPos, BlockState pBlockState, int inventorySize) {
+        super(type, pPos, pBlockState, inventorySize);
         entityData = new BasecoreBlockEntityData();
         this.data = new ContainerData() {
             @Override
@@ -50,6 +64,8 @@ public class BaseCoreBlockEntity extends ToDamageBlockEntity<BasecoreModuleItem>
                     case 0 -> BaseCoreBlockEntity.this.entityData.getHealth();
                     case 1 -> BaseCoreBlockEntity.this.entityData.getMaxHealth();
                     case 2 -> BaseCoreBlockEntity.this.entityData.getRange();
+                    case 3 -> BaseCoreBlockEntity.this.energy;
+                    case 4 -> BaseCoreBlockEntity.this.getMaxEnergy();
                     default -> 0;
                 };
             }
@@ -61,7 +77,7 @@ public class BaseCoreBlockEntity extends ToDamageBlockEntity<BasecoreModuleItem>
             }
             @Override
             public int getCount() {
-                return 3;
+                return 5;
             }
         };
     }
@@ -140,8 +156,61 @@ public class BaseCoreBlockEntity extends ToDamageBlockEntity<BasecoreModuleItem>
         return entityData.getRange();
     }
 
+    /** 基地逻辑中心（用于范围计算）；普通基地核心即方块自身位置，多方块控制器可覆写为结构中心。 */
+    public net.minecraft.core.BlockPos getBaseCenter() {
+        return getBlockPos();
+    }
+
     public int getMaxHealth() {
         return entityData.getMaxHealth();
+    }
+
+    // ----- 能源（Rs） -----
+
+    public int getEnergy() {
+        return energy;
+    }
+
+    public int getMaxEnergy() {
+        return dev.anye.mc.basecore.config.BasecoreConfig.getEnergyCapacity();
+    }
+
+    public void setEnergy(int value) {
+        energy = net.minecraft.util.Mth.clamp(value, 0, getMaxEnergy());
+        energyPowered = energy > 0;
+        super.setChanged();
+    }
+
+    public void addEnergy(int value) {
+        setEnergy(energy + value);
+    }
+
+    /** 当前能源是否足够运行；为 false 时模块效果与怪物攻核停止。 */
+    public boolean isEnergyPowered() {
+        return energyPowered;
+    }
+
+    /** 每消耗 1 Rs 所需的 tick 数；苏式基地计算机覆写为 1 秒。 */
+    protected int getEnergyTicksPerUnit() {
+        return dev.anye.mc.basecore.config.BasecoreConfig.getBasecoreEnergyTicksPerRs();
+    }
+
+    /**
+     * 每 {@code balance.energy_refuel_seconds}（默认 10 秒）尝试一次：
+     * 从容器中取 1 个能源物品补充 Rs；若剩余可填充量小于该物品提供的 Rs，则不消耗（避免浪费）。
+     */
+    private void tryRefuelEnergy() {
+        int room = getMaxEnergy() - energy;
+        if (room <= 0) return;
+        for (int i = 0; i < items.getSlots(); i++) {
+            int rs = dev.anye.mc.basecore.energy.EnergySources.getRs(items.getStackInSlot(i));
+            if (rs <= 0 || rs > room) continue;
+            items.extractItem(i, 1, false);
+            energy += rs;
+            energyPowered = true;
+            super.setChanged();
+            return;
+        }
     }
 
     public void damage(int health) {
@@ -181,6 +250,10 @@ public class BaseCoreBlockEntity extends ToDamageBlockEntity<BasecoreModuleItem>
     }
 
     private int syncTick = 0;
+    /** 每 20 tick 重新判定一次旋转动力，避免频繁反射读取 Create 网络。 */
+    private int rotationCheckTick = 0;
+    /** 当前是否获得足够的旋转动力；未启用联动或带免疫标记时为 true。 */
+    private boolean rotationPowered = true;
     // 裂纹破坏循环状态（怪物攻击核心可选玩法），按怪物实体 ID 分别追踪，支持多怪物同时攻核
     private final Map<Integer, Float> crackProgressMap = new HashMap<>();
     private final Map<Integer, Integer> crackStageMap = new HashMap<>();
@@ -192,6 +265,50 @@ public class BaseCoreBlockEntity extends ToDamageBlockEntity<BasecoreModuleItem>
 
     public void tick(Level level, BlockPos blockPos, BlockState blockState) {
         entityData.tick();
+
+        if (!level.isClientSide()) {
+            // 冷汗联动：低于停机阈值时基地核心彻底停止工作（仍保留客户端同步，便于显示状态）
+            if (dev.anye.mc.basecore.integration.coldsweat.ColdSweatCompat.isShutdown(this)) {
+                syncTick++;
+                if (syncTick >= 20) {
+                    syncTick = 0;
+                    updateToTrackingOnly();
+                }
+                return;
+            }
+            // 能源：每 X tick 消耗 1 Rs，耗尽后基地停止工作
+            if (--energyTick <= 0) {
+                energyTick = getEnergyTicksPerUnit();
+                if (energy > 0) {
+                    energy--;
+                    super.setChanged();
+                }
+            }
+            energyPowered = energy > 0;
+            if (++refuelTick >= dev.anye.mc.basecore.config.BasecoreConfig.getEnergyRefuelTicks()) {
+                refuelTick = 0;
+                tryRefuelEnergy();
+            }
+            // 机械动力联动：需要足够转速与应力才能工作
+            if (--rotationCheckTick <= 0) {
+                rotationCheckTick = 20;
+                rotationPowered = dev.anye.mc.basecore.integration.create.RotationHelper.evaluate(
+                        level, blockPos,
+                        dev.anye.mc.basecore.config.BasecoreConfig.getCreateBasecoreMinRpm(),
+                        dev.anye.mc.basecore.config.BasecoreConfig.getCreateBasecoreStress(),
+                        entityData.isRotationImmune()).powered();
+            }
+        }
+
+        if (!rotationPowered || !energyPowered) {
+            // 未获得足够应力或能源：模块效果与怪物攻击均停止，仅维持基础同步
+            syncTick++;
+            if (syncTick >= 20) {
+                syncTick = 0;
+                updateToTrackingOnly();
+            }
+            return;
+        }
 
         // 可选玩法：怪物攻击基地核心（配置 balance.monster_attack_core，默认关闭）
         if (!level.isClientSide() && dev.anye.mc.basecore.config.BasecoreConfig.isMonsterAttackCore()) {
@@ -209,6 +326,11 @@ public class BaseCoreBlockEntity extends ToDamageBlockEntity<BasecoreModuleItem>
             syncTick = 0;
             updateToTrackingOnly();
         }
+    }
+
+    /** 当前是否已获得足够的旋转动力（供 GUI 或联动模组查询）。 */
+    public boolean isRotationPowered() {
+        return rotationPowered;
     }
 
     /**
@@ -370,6 +492,8 @@ public class BaseCoreBlockEntity extends ToDamageBlockEntity<BasecoreModuleItem>
         loading = false;
         if (pTag.hasUUID("owner")) owner = pTag.getUUID("owner");
         entityData.handle(pTag);
+        energy = pTag.getInt("energy");
+        energyPowered = energy > 0;
         itemChange();
         updateToClient();
     }
@@ -378,6 +502,7 @@ public class BaseCoreBlockEntity extends ToDamageBlockEntity<BasecoreModuleItem>
     protected void saveAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
         super.saveAdditional(pTag, pRegistries);
         if (owner != null) pTag.putUUID("owner", owner);
+        pTag.putInt("energy", energy);
         entityData.saveToNbt(pTag);
     }
 

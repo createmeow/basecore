@@ -20,10 +20,18 @@ public class DataGen_BlockTag extends BlockTagsProvider {
                 .add(BlockRegister.BASE_CORE.get())
                 .add(BlockRegister.DEFEND.get())
                 .add(BlockRegister.HASH_CHEST.get())
-                .add(BlockRegister.Damage.get());
+                .add(BlockRegister.Damage.get())
+                .add(BlockRegister.STRESS_SUPPLY.get())
+                .add(BlockRegister.SOVIET_COMPUTER.get())
+                .add(BlockRegister.SOVIET_COMPUTER_CASING.get())
+                .add(BlockRegister.ELECTROLUMINESCENT_DISPLAY.get());
         tag(net.minecraft.tags.BlockTags.NEEDS_IRON_TOOL)
                 .add(BlockRegister.BASE_CORE.get())
                 .add(BlockRegister.DEFEND.get())
-                .add(BlockRegister.HASH_CHEST.get());
+                .add(BlockRegister.HASH_CHEST.get())
+                .add(BlockRegister.STRESS_SUPPLY.get())
+                .add(BlockRegister.SOVIET_COMPUTER.get())
+                .add(BlockRegister.SOVIET_COMPUTER_CASING.get())
+                .add(BlockRegister.ELECTROLUMINESCENT_DISPLAY.get());
     }
 }

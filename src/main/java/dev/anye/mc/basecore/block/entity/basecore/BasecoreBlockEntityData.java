@@ -20,6 +20,10 @@ public class BasecoreBlockEntityData {
     private UUID owner = null;
     private int invincibleTime = 0;
     private int durabilityDamage = 0;
+    /** 冷汗联动豁免：为 true 时该核心不受低温导致的 GUI 失效/停机影响。 */
+    private boolean coldImmune = false;
+    /** 机械动力联动豁免：为 true 时该核心无需应力即可工作（供依赖 basecore 的模组使用）。 */
+    private boolean rotationImmune = false;
     private final Set<UUID> permittedPlayers = new HashSet<>();
     /** Stores player names for members (keyed by UUID), persisted in NBT */
     private final Map<UUID, String> memberNames = new HashMap<>();
@@ -47,6 +51,8 @@ public class BasecoreBlockEntityData {
         if (tag.contains("interference_time")) interferenceTime = tag.getInt("interference_time");
         if (tag.contains("owner")) owner = tag.getUUID("owner");
         if (tag.contains("durability_damage")) durabilityDamage = tag.getInt("durability_damage");
+        if (tag.contains("cold_immune")) coldImmune = tag.getBoolean("cold_immune");
+        if (tag.contains("rotation_immune")) rotationImmune = tag.getBoolean("rotation_immune");
         if (tag.contains("permitted_players")) {
             int[] uuids = tag.getIntArray("permitted_players");
             for (int i = 0; i < uuids.length; i += 4) {
@@ -83,6 +89,8 @@ public class BasecoreBlockEntityData {
         tag.putInt("interference_time", interferenceTime);
         if (owner != null) tag.putUUID("owner", owner);
         tag.putInt("durability_damage", durabilityDamage);
+        tag.putBoolean("cold_immune", coldImmune);
+        tag.putBoolean("rotation_immune", rotationImmune);
         if (!permittedPlayers.isEmpty()) {
             int[] uuids = new int[permittedPlayers.size() * 4];
             int i = 0;
@@ -127,6 +135,8 @@ public class BasecoreBlockEntityData {
         tag.putInt("interference_time", interferenceTime);
         if (owner != null) tag.putUUID("owner", owner);
         tag.putInt("durability_damage", durabilityDamage);
+        tag.putBoolean("cold_immune", coldImmune);
+        tag.putBoolean("rotation_immune", rotationImmune);
         if (!permittedPlayers.isEmpty()) {
             int[] uuids = new int[permittedPlayers.size() * 4];
             int i = 0;
@@ -223,6 +233,12 @@ public class BasecoreBlockEntityData {
     // ----- Durability -----
     public int getDurabilityDamage() { return durabilityDamage; }
     public void setDurabilityDamage(int damage) { this.durabilityDamage = damage; }
+
+    // ----- Integration immunity -----
+    public boolean isColdImmune() { return coldImmune; }
+    public void setColdImmune(boolean coldImmune) { this.coldImmune = coldImmune; }
+    public boolean isRotationImmune() { return rotationImmune; }
+    public void setRotationImmune(boolean rotationImmune) { this.rotationImmune = rotationImmune; }
 
     // ----- Tick -----
     public void tick() {

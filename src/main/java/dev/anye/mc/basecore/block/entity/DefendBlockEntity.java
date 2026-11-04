@@ -57,6 +57,10 @@ public class DefendBlockEntity extends ToDamageBlockEntity<BaseModuleItem> imple
     private boolean hasThorns = false;
     private int autoRepairCount = 0;
     private int autoRepairTick = 0;
+    /** 每 20 tick 重新判定一次旋转动力。 */
+    private int rotationCheckTick = 0;
+    /** 当前是否获得足够的旋转动力；未启用联动或带免疫标记时为 true。 */
+    private boolean rotationPowered = true;
 
     protected final ContainerData data;
 
@@ -246,6 +250,19 @@ public class DefendBlockEntity extends ToDamageBlockEntity<BaseModuleItem> imple
                 autoRepairTick = 0;
                 addHealth(autoRepairCount);
             } else autoRepairTick++;
+        }
+
+        // 机械动力联动：需要足够转速与应力才能开火
+        if (--rotationCheckTick <= 0) {
+            rotationCheckTick = 20;
+            rotationPowered = dev.anye.mc.basecore.integration.create.RotationHelper.evaluate(
+                    pLevel, pPos,
+                    dev.anye.mc.basecore.config.BasecoreConfig.getCreateDefendMinRpm(),
+                    dev.anye.mc.basecore.config.BasecoreConfig.getCreateDefendStress(),
+                    false).powered();
+        }
+        if (!rotationPowered) {
+            return;
         }
 
         if (attackTick >= dev.anye.mc.basecore.config.BasecoreConfig.getDefendAttackInterval()) {

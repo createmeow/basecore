@@ -36,6 +36,94 @@ public class BasecoreConfig {
     @SerializedName("balance")
     private BalanceSettings balance = new BalanceSettings();
 
+    @Expose
+    @SerializedName("integration")
+    private IntegrationSettings integration = new IntegrationSettings();
+
+    /**
+     * 联动开关配置。新增内容分为「冷汗联动」与「机械动力联动」两组，可分别单独开关。
+     */
+    public static class IntegrationSettings {
+        @Expose
+        @SerializedName("cold_sweat")
+        public ColdSweat coldSweat = new ColdSweat();
+
+        @Expose
+        @SerializedName("create")
+        public Create create = new Create();
+    }
+
+    /** 冷汗（Cold Sweat）联动：低温下基地核心液晶屏失效 / 彻底停机。 */
+    public static class ColdSweat {
+        /** 是否启用冷汗联动（关闭后基地核心不受环境温度影响）。 */
+        @Expose
+        @SerializedName("enabled")
+        public boolean enabled = true;
+
+        /** 低于该温度（摄氏度）无法打开基地核心 GUI。 */
+        @Expose
+        @SerializedName("gui_disable_temperature")
+        public double guiDisableTemperature = -5.0d;
+
+        /** 低于该温度（摄氏度）基地核心彻底停止工作。 */
+        @Expose
+        @SerializedName("shutdown_temperature")
+        public double shutdownTemperature = -15.0d;
+    }
+
+    /** 机械动力（Create）联动：基地核心/防御炮需要应力驱动，新增应力供应设备。 */
+    public static class Create {
+        /** 是否启用机械动力联动（关闭后基地核心/防御炮不再需要应力）。默认关闭：应力方案尚未定稿。 */
+        @Expose
+        @SerializedName("enabled")
+        public boolean enabled = false;
+
+        /** 基地核心最低转速（RPM）。 */
+        @Expose
+        @SerializedName("basecore_min_rpm")
+        public int basecoreMinRpm = 64;
+
+        /** 单台基地核心所需应力（SU）。 */
+        @Expose
+        @SerializedName("basecore_stress")
+        public int basecoreStress = 128;
+
+        /** 防御炮最低转速（RPM）。 */
+        @Expose
+        @SerializedName("defend_min_rpm")
+        public int defendMinRpm = 64;
+
+        /** 单台防御炮所需应力（SU）。 */
+        @Expose
+        @SerializedName("defend_stress")
+        public int defendStress = 128;
+
+        /** 不间断应力供应器单次可存储的 air 总量。 */
+        @Expose
+        @SerializedName("supply_air_capacity")
+        public int supplyAirCapacity = 1800;
+
+        /** 不间断应力供应器输出转速（RPM）。 */
+        @Expose
+        @SerializedName("supply_rpm")
+        public int supplyRpm = 32;
+
+        /** 不间断应力供应器输出应力（SU）。 */
+        @Expose
+        @SerializedName("supply_stress")
+        public int supplyStress = 128;
+
+        /** 不间断应力供应器每消耗 1 air 所需的 tick 数（默认 40 tick = 2 秒）。 */
+        @Expose
+        @SerializedName("supply_air_interval_ticks")
+        public int supplyAirIntervalTicks = 40;
+
+        /** 不间断应力供应器与基地核心联动时的搜索半径（在基地范围之外额外增加的格数）。 */
+        @Expose
+        @SerializedName("supply_link_range")
+        public int supplyLinkRange = 6;
+    }
+
     public static class BalanceSettings {
         @Expose
         @SerializedName("basecore_range")
@@ -96,6 +184,36 @@ public class BasecoreConfig {
         @Expose
         @SerializedName("monster_attack_list")
         public List<String> monsterAttackList = new ArrayList<>();
+
+        /** 苏式基地计算机随机损坏的最短间隔（秒），默认 180 秒。 */
+        @Expose
+        @SerializedName("soviet_damage_min_seconds")
+        public int sovietDamageMinSeconds = 180;
+
+        /** 苏式基地计算机随机损坏的最长间隔（秒），默认 600 秒。 */
+        @Expose
+        @SerializedName("soviet_damage_max_seconds")
+        public int sovietDamageMaxSeconds = 600;
+
+        /** 能源条容量（Rs）。1 Rs = 基地核心 2 秒 / 苏式计算机 1 秒的运行时间。 */
+        @Expose
+        @SerializedName("energy_capacity")
+        public int energyCapacity = 900;
+
+        /** 普通基地核心每消耗 1 Rs 所需的秒数，默认 2 秒。 */
+        @Expose
+        @SerializedName("basecore_energy_seconds_per_rs")
+        public int basecoreEnergySecondsPerRs = 2;
+
+        /** 苏式基地计算机每消耗 1 Rs 所需的秒数，默认 1 秒。 */
+        @Expose
+        @SerializedName("soviet_energy_seconds_per_rs")
+        public int sovietEnergySecondsPerRs = 1;
+
+        /** 尝试用容器内红石补充能源的间隔（秒），默认 10 秒。 */
+        @Expose
+        @SerializedName("energy_refuel_seconds")
+        public int energyRefuelSeconds = 10;
     }
 
     public static class UpgradeCosts {
@@ -197,6 +315,16 @@ public class BasecoreConfig {
                 INSTANCE = _JsonConfig.GSON.fromJson(reader, BasecoreConfig.class);
                 if (INSTANCE == null) INSTANCE = new BasecoreConfig();
                 LOGGER.info("Loaded config: gameplay={}", INSTANCE.gameplay);
+                // 旧配置文件缺少的段落（如 integration / 苏式计算机项）补全后回写，方便用户直接修改
+                boolean missingIntegration = INSTANCE.integration == null;
+                boolean missingSovietFields = INSTANCE.balance != null
+                        && INSTANCE.balance.sovietDamageMinSeconds <= 0;
+                if (INSTANCE.balance != null && missingSovietFields) {
+                    INSTANCE.balance.sovietDamageMinSeconds = 180;
+                    INSTANCE.balance.sovietDamageMaxSeconds = 600;
+                }
+                integration();
+                if (missingIntegration || missingSovietFields) save();
             } catch (IOException e) {
                 LOGGER.error("Failed to load config, using defaults", e);
                 INSTANCE = new BasecoreConfig();
@@ -414,6 +542,121 @@ public class BasecoreConfig {
             return "whitelist".equals(mode) == inList;
         }
         return true; // all
+    }
+
+    // ----- 苏式基地计算机 -----
+
+    /** 苏式基地计算机随机损坏的最短间隔（tick），最小 20 tick */
+    public static int getSovietDamageMinTicks() {
+        ensureLoaded();
+        // 旧配置文件缺少该字段时 Gson 会填 0，此时回落到默认值
+        int seconds = INSTANCE.balance.sovietDamageMinSeconds > 0
+                ? INSTANCE.balance.sovietDamageMinSeconds : 180;
+        return Math.max(20, seconds * 20);
+    }
+
+    /** 苏式基地计算机随机损坏的最长间隔（tick），最小 20 tick */
+    public static int getSovietDamageMaxTicks() {
+        ensureLoaded();
+        int seconds = INSTANCE.balance.sovietDamageMaxSeconds > 0
+                ? INSTANCE.balance.sovietDamageMaxSeconds : 600;
+        return Math.max(getSovietDamageMinTicks(), seconds * 20);
+    }
+
+    // ----- 联动配置 -----
+
+    /**
+     * 旧配置文件缺少 integration 段时，Gson 会把整段填成 null，
+     * 这里按需补全为默认值，避免读取时 NPE。
+     */
+    private static IntegrationSettings integration() {
+        ensureLoaded();
+        if (INSTANCE.integration == null) INSTANCE.integration = new IntegrationSettings();
+        if (INSTANCE.integration.coldSweat == null) INSTANCE.integration.coldSweat = new ColdSweat();
+        if (INSTANCE.integration.create == null) INSTANCE.integration.create = new Create();
+        return INSTANCE.integration;
+    }
+
+    public static boolean isColdSweatIntegrationEnabled() {
+        return integration().coldSweat.enabled;
+    }
+
+    public static double getColdSweatGuiDisableTemperature() {
+        return integration().coldSweat.guiDisableTemperature;
+    }
+
+    public static double getColdSweatShutdownTemperature() {
+        return integration().coldSweat.shutdownTemperature;
+    }
+
+    public static boolean isCreateIntegrationEnabled() {
+        return integration().create.enabled;
+    }
+
+    public static int getCreateBasecoreMinRpm() {
+        return Math.max(0, integration().create.basecoreMinRpm);
+    }
+
+    public static int getCreateBasecoreStress() {
+        return Math.max(0, integration().create.basecoreStress);
+    }
+
+    public static int getCreateDefendMinRpm() {
+        return Math.max(0, integration().create.defendMinRpm);
+    }
+
+    public static int getCreateDefendStress() {
+        return Math.max(0, integration().create.defendStress);
+    }
+
+    public static int getSupplyAirCapacity() {
+        return Math.max(1, integration().create.supplyAirCapacity);
+    }
+
+    public static int getSupplyRpm() {
+        return Math.max(1, integration().create.supplyRpm);
+    }
+
+    public static int getSupplyStress() {
+        return Math.max(1, integration().create.supplyStress);
+    }
+
+    public static int getSupplyAirIntervalTicks() {
+        return Math.max(1, integration().create.supplyAirIntervalTicks);
+    }
+
+    public static int getSupplyLinkRange() {
+        return Math.max(0, integration().create.supplyLinkRange);
+    }
+
+    // ----- 能源（Rs） -----
+
+    /** 能源条容量，旧配置缺字段（0）时回落 900。 */
+    public static int getEnergyCapacity() {
+        ensureLoaded();
+        int value = INSTANCE.balance.energyCapacity;
+        return value > 0 ? value : 900;
+    }
+
+    /** 普通基地核心每消耗 1 Rs 的 tick 数（默认 2 秒 = 40 tick）。 */
+    public static int getBasecoreEnergyTicksPerRs() {
+        ensureLoaded();
+        int seconds = INSTANCE.balance.basecoreEnergySecondsPerRs;
+        return Math.max(1, (seconds > 0 ? seconds : 2) * 20);
+    }
+
+    /** 苏式基地计算机每消耗 1 Rs 的 tick 数（默认 1 秒 = 20 tick）。 */
+    public static int getSovietEnergyTicksPerRs() {
+        ensureLoaded();
+        int seconds = INSTANCE.balance.sovietEnergySecondsPerRs;
+        return Math.max(1, (seconds > 0 ? seconds : 1) * 20);
+    }
+
+    /** 尝试补充能源的间隔 tick（默认 10 秒 = 200 tick）。 */
+    public static int getEnergyRefuelTicks() {
+        ensureLoaded();
+        int seconds = INSTANCE.balance.energyRefuelSeconds;
+        return Math.max(20, (seconds > 0 ? seconds : 10) * 20);
     }
 
     private static void ensureLoaded() {

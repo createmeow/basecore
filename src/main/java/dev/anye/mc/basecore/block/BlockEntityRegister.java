@@ -6,7 +6,9 @@ import dev.anye.mc.basecore.block.entity.DefendBlockEntity;
 import dev.anye.mc.basecore.block.entity.HashChestBlockEntity;
 import dev.anye.mc.basecore.block.entity.NothingBlockEntity;
 import dev.anye.mc.basecore.block.entity.PlaceholderBlockEntity;
+import dev.anye.mc.basecore.block.entity.StressSupplyBlockEntity;
 import dev.anye.mc.basecore.block.entity.basecore.BaseCoreBlockEntity;
+import dev.anye.mc.basecore.block.soviet_computer.SovietComputerBlockEntity;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.IEventBus;
@@ -22,6 +24,8 @@ public class BlockEntityRegister {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<HashChestBlockEntity>> HashChest = BLOCK_ENTITIES.register("hash_chest", () -> BlockEntityType.Builder.of(HashChestBlockEntity::new, BlockRegister.HASH_CHEST.get()).build(null));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<NothingBlockEntity>> NOTHING = BLOCK_ENTITIES.register("nothing", () -> BlockEntityType.Builder.of(NothingBlockEntity::new, BlockRegister.NOTHING.get()).build(null));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PlaceholderBlockEntity>> PLACEHOLDER = BLOCK_ENTITIES.register("placeholder", () -> BlockEntityType.Builder.of(PlaceholderBlockEntity::new, BlockRegister.PLACEHOLDER.get()).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<StressSupplyBlockEntity>> STRESS_SUPPLY = BLOCK_ENTITIES.register("stress_supply", () -> BlockEntityType.Builder.of(StressSupplyBlockEntity::new, BlockRegister.STRESS_SUPPLY.get()).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SovietComputerBlockEntity>> SOVIET_COMPUTER = BLOCK_ENTITIES.register("soviet_computer", () -> BlockEntityType.Builder.of(SovietComputerBlockEntity::new, BlockRegister.SOVIET_COMPUTER.get()).build(null));
 
     public static void reg(IEventBus eventBus){
         BLOCK_ENTITIES.register(eventBus);

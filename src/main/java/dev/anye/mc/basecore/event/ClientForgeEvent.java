@@ -49,15 +49,22 @@ public class ClientForgeEvent {
         int ws = w * basecoreBlockEntityData.getHealth() / basecoreBlockEntityData.getMaxHealth();
         String name = basecoreBlockEntityData.getName();
         if (name.isEmpty()) name = "No Name";
-        guiGraphics.drawCenteredString(minecraft.font, name, cx, y, 0xff00ff00);
+        // 普通基地核心的名称用绿色，苏式基地计算机用黄色
+        boolean soviet = minecraft.level != null
+                && minecraft.level.getBlockEntity(blockPos) instanceof dev.anye.mc.basecore.block.soviet_computer.SovietComputerBlockEntity;
+        guiGraphics.drawCenteredString(minecraft.font, name, cx, y, soviet ? 0xFFFFCC00 : 0xFF55FF55);
         y += minecraft.font.lineHeight;
 
+        // 苏式基地计算机的基地血条与血量文本使用黄色
+        int barColor = soviet ? 0xFFFFCC00 : 0xFFCC0000;
+        int healthTextColor = soviet ? 0xFFFFCC00 : 0xFFFFFF00;
+
         guiGraphics.fill(x, y, x + w, y + 3, BAR_BG_COLOR);
-        guiGraphics.fill(x, y, x + ws, y + 3, 0xFFCC0000);
+        guiGraphics.fill(x, y, x + ws, y + 3, barColor);
 
         y += 4;
 
-        guiGraphics.drawString(minecraft.font, basecoreBlockEntityData.getHealth() + "/" + basecoreBlockEntityData.getMaxHealth(), x, y, 0xffffff00);
+        guiGraphics.drawString(minecraft.font, basecoreBlockEntityData.getHealth() + "/" + basecoreBlockEntityData.getMaxHealth(), x, y, healthTextColor);
 
         y += minecraft.font.lineHeight;
 

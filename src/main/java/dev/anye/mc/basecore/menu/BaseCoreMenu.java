@@ -21,14 +21,19 @@ public class BaseCoreMenu extends AbstractContainerMenu {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final int inventorySlotCount = 27;
     private BaseCoreBlockEntity baseCoreBlockEntity;
+    private final ContainerData containerData;
     public BaseCoreBlockEntity getBaseCoreBE() { return baseCoreBlockEntity; }
+    /** 客户端读数统一走数据槽位（客户端侧没有方块实体实例）。 */
+    public int getEnergy() { return containerData.get(3); }
+    public int getMaxEnergy() { return Math.max(1, containerData.get(4)); }
     /** Server-side player tracking for member actions */
     private net.minecraft.server.level.ServerPlayer serverPlayer;
     public BaseCoreMenu(int pContainerId, Inventory inventory , FriendlyByteBuf ex) {
-        this(pContainerId,inventory, inventory.player.level().getBlockEntity(ex.readBlockPos()),new SimpleContainerData(3));
+        this(pContainerId,inventory, inventory.player.level().getBlockEntity(ex.readBlockPos()),new SimpleContainerData(5));
     }
     public BaseCoreMenu(int cid, Inventory inv, BlockEntity ent, ContainerData dat){
         super(MenuTypeRegister.BASECORE_MENU.get(), cid);
+        this.containerData = dat;
         checkContainerSize(inv,inventorySlotCount);
         if (ent instanceof BaseCoreBlockEntity baseCoreBlockEntity) {
             this.baseCoreBlockEntity = baseCoreBlockEntity;
@@ -46,6 +51,8 @@ public class BaseCoreMenu extends AbstractContainerMenu {
                 this.addSlot(new SlotItemHandler(itemHandlerHelper, i, 7+y * 18, 20+x*18) {
                     @Override
                     public boolean mayPlace(@NotNull ItemStack itemStack) {
+                        // 能源物品（红石/红石块，或数据包指定的物品）也允许放入，用于补充能源条
+                        if (dev.anye.mc.basecore.energy.EnergySources.isEnergySource(itemStack)) return true;
                         if (itemStack.getItem().asItem() instanceof BasecoreModuleItem basecoreModuleItem){
                             if (basecoreModuleItem instanceof RangeModuleItemItem rangeModuleItemItem){
                                 return BasecoreServerHelper.check( baseCoreBlockEntity,baseCoreBlockEntity.getRange() + rangeModuleItemItem.getRange(itemStack.getCount()));
@@ -65,35 +72,39 @@ public class BaseCoreMenu extends AbstractContainerMenu {
 
         if (!sourceSlot.hasItem()) return ItemStack.EMPTY;
         ItemStack sourceStack = sourceSlot.getItem();
+        ItemStack copyOfSourceStack = sourceStack.copy();
 
-        if (sourceStack.getItem().asItem() instanceof BasecoreModuleItem basecoreModuleItem) {
-            if (basecoreModuleItem instanceof RangeModuleItemItem rangeModuleItemItem) {
-                if (BasecoreServerHelper.check(baseCoreBlockEntity, baseCoreBlockEntity.getRange() + rangeModuleItemItem.getRange(sourceStack.getCount())))
-                    return ItemStack.EMPTY;
-            } else {
-                ItemStack copyOfSourceStack = sourceStack.copy();
-                if (ind < InventorySlotIndex.VANILLA_FIRST_SLOT_INDEX + InventorySlotIndex.VANILLA_SLOT_COUNT) {
-                    if (!moveItemStackTo(sourceStack, InventorySlotIndex.INVENTORY_FIRST_SLOT_INDEX, InventorySlotIndex.INVENTORY_FIRST_SLOT_INDEX + inventorySlotCount, false)) {
-                        return ItemStack.EMPTY;
-                    }
-                } else if (ind < InventorySlotIndex.INVENTORY_FIRST_SLOT_INDEX + inventorySlotCount) {
-                    if (!moveItemStackTo(sourceStack, InventorySlotIndex.VANILLA_FIRST_SLOT_INDEX, InventorySlotIndex.VANILLA_FIRST_SLOT_INDEX + InventorySlotIndex.VANILLA_SLOT_COUNT, false)) {
-                        return ItemStack.EMPTY;
-                    }
-                } else {
-                    LOGGER.error("Error Inventory slot index");
-                    return ItemStack.EMPTY;
-                }
-                if (sourceStack.getCount() == 0) {
-                    sourceSlot.set(ItemStack.EMPTY);
-                } else {
-                    sourceSlot.setChanged();
-                }
-                sourceSlot.onTake(player, sourceStack);
-                return copyOfSourceStack;
-            }
+        boolean isModule = sourceStack.getItem().asItem() instanceof BasecoreModuleItem;
+        boolean isEnergy = dev.anye.mc.basecore.energy.EnergySources.isEnergySource(sourceStack);
+        if (!isModule && !isEnergy) return ItemStack.EMPTY;
+
+        // 范围模块的原有行为：shift 点击不做移动（范围冲突由放入槽位时判定）
+        if (isModule && sourceStack.getItem().asItem() instanceof RangeModuleItemItem) {
+            return ItemStack.EMPTY;
         }
-        return ItemStack.EMPTY;
+
+        if (ind < InventorySlotIndex.INVENTORY_FIRST_SLOT_INDEX) {
+            if (!moveItemStackTo(sourceStack, InventorySlotIndex.INVENTORY_FIRST_SLOT_INDEX,
+                    InventorySlotIndex.INVENTORY_FIRST_SLOT_INDEX + inventorySlotCount, false)) {
+                return ItemStack.EMPTY;
+            }
+        } else if (ind < InventorySlotIndex.INVENTORY_FIRST_SLOT_INDEX + inventorySlotCount) {
+            if (!moveItemStackTo(sourceStack, InventorySlotIndex.VANILLA_FIRST_SLOT_INDEX,
+                    InventorySlotIndex.VANILLA_FIRST_SLOT_INDEX + InventorySlotIndex.VANILLA_SLOT_COUNT, false)) {
+                return ItemStack.EMPTY;
+            }
+        } else {
+            LOGGER.error("Error Inventory slot index");
+            return ItemStack.EMPTY;
+        }
+
+        if (sourceStack.getCount() == 0) {
+            sourceSlot.set(ItemStack.EMPTY);
+        } else {
+            sourceSlot.setChanged();
+        }
+        sourceSlot.onTake(player, sourceStack);
+        return copyOfSourceStack;
     }
 
     public void addPlayerInventory(Inventory playerInv,int x,int y,int space){
@@ -115,6 +126,19 @@ public class BaseCoreMenu extends AbstractContainerMenu {
     }
 
     // ----- Member management -----
+
+    public void renameBase(String newName) {
+        if (serverPlayer == null || baseCoreBlockEntity == null) return;
+        if (!serverPlayer.getUUID().equals(baseCoreBlockEntity.getOwner())) {
+            serverPlayer.sendSystemMessage(net.minecraft.network.chat.Component.translatable("error.basecore.permission.right_click_block"));
+            return;
+        }
+        String name = newName == null ? "" : newName.trim();
+        if (name.isEmpty()) return;
+        baseCoreBlockEntity.setName(name);
+        baseCoreBlockEntity.setChanged();
+        serverPlayer.sendSystemMessage(net.minecraft.network.chat.Component.translatable("gui.basecore.basecore.renamed", name));
+    }
 
     public void addMember(String playerName) {
         if (serverPlayer == null) return;

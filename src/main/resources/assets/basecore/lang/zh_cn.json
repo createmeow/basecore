@@ -97,8 +97,11 @@
   "error.basecore.pssi.no_basecore": "未在基地核心作用区域内",
   "error.basecore.pssi.has_permission": "此基地为您或其已将您添加为成员",
   "error.basecore.pssi.interfered": "已被干扰",
+  "error.basecore.pssi.failed": "§4干扰失败：目标抗干扰能力过强",
   "error.basecore.prosthodontic.health_full": "生命值满",
   "gui.basecore.basecore.interference": "已被入侵，剩余时间 : %s",
+  "gui.basecore.basecore.renamed": "§a基地名称已改为 %s",
+  "gui.basecore.energy": "能源 %s/%s Rs\n放入红石（10 Rs）或红石块（90 Rs）补充",
 
   "block.basecore.hash_chest": "加密容器",
   "block_entity.basecore.hash_chest": "加密容器",
@@ -134,5 +137,30 @@
   "gui.basecore.upgrade.title": "基地核心升级",
 
   "death.attack.cannon_shot": "%1$s被防御炮轰死了了",
-  "death.attack.cannon_shot.player": "%1$s被%2$s的防御炮轰死了"
+  "death.attack.cannon_shot.player": "%1$s被%2$s的防御炮轰死了",
+
+  "block.basecore.stress_supply": "不间断应力供应器",
+  "block.basecore.soviet_computer": "苏式基地计算机",
+  "block.basecore.soviet_computer_casing": "苏式计算机外壳",
+  "block.basecore.electroluminescent_display": "电致发光显示器",
+
+  "item.basecore.electronic_tube": "电子管",
+  "item.basecore.ferrite_core": "铁氧磁化芯",
+  "item.basecore.ternary_circuit_board": "三进制电路板",
+  "item.basecore.ternary_integrated_circuit": "三进制集成电路",
+  "item.basecore.broken_electronic_tube": "损坏的电子管",
+
+  "item.basecore.stress_supply.desc": "§7存储 1800 air，输出 32 RPM / 128 SU，每 2 秒消耗 1 air；靠近基地核心时与其血量同步",
+  "item.basecore.electronic_tube.desc": "§7三进制电子工业的基础元件",
+  "item.basecore.ferrite_core.desc": "§7用于制作三进制电路板的磁芯",
+  "item.basecore.ternary_circuit_board.desc": "§7三进制电路板",
+  "item.basecore.ternary_integrated_circuit.desc": "§7高度集成的三进制电路",
+  "block.basecore.soviet_computer.desc": "§73x3x3 多方块结构，只需在中层四边任一空位放置 1 个电致发光显示器；功能等同基地核心，会随机损坏，可放入电子管修复",
+  "block.basecore.soviet_computer.desc.temperature": "§7三进制电路对温度与电压波动极不敏感，可在宽温范围内稳定工作（不受低温停机影响）",
+
+  "error.basecore.cold_sweat.gui": "§b环境温度过低，液晶显示屏无法正常显示",
+  "error.basecore.cold_sweat.shutdown": "§b环境温度过低，基地核心已彻底停止工作",
+  "error.basecore.soviet_computer.incomplete": "§4结构未完成：请在中层四边任一空位放置 1 个电致发光显示器",
+  "error.basecore.soviet_computer.broken": "§c%s 发生故障：请向机器的槽位中放入电子管来修复",
+  "error.basecore.soviet_computer.no_space": "§4空间不足：需要 3x3x3 的空旷区域（控制器放置在底层中心）"
 }

@@ -42,6 +42,12 @@ public record MemberActionPayload(String playerName, boolean isAdd) implements C
                     } else {
                         menu.removeMember(payload.playerName());
                     }
+                } else if (serverPlayer.containerMenu instanceof dev.anye.mc.basecore.menu.SovietComputerMenu menu) {
+                    if (payload.isAdd()) {
+                        menu.addMember(payload.playerName());
+                    } else {
+                        menu.removeMember(payload.playerName());
+                    }
                 }
             }
         });

@@ -105,7 +105,7 @@ public class BasecoreServerHelper {
         for (BaseCoreBlockEntity baseCoreBlockEntity : BASECORE_BLOCK_ENTITIES.values()) {
             // 只与同一维度的核心比较，避免跨维度/旧存档残留实体误判
             if (baseCoreBlockEntity.getLevel() != level) continue;
-            AABB existingBox = getRangeBox(baseCoreBlockEntity.getBlockPos(), baseCoreBlockEntity.getRange());
+            AABB existingBox = getRangeBox(baseCoreBlockEntity.getBaseCenter(), baseCoreBlockEntity.getRange());
             if (existingBox.intersects(getRangeBox(blockPos, dev.anye.mc.basecore.config.BasecoreConfig.getBasecoreRange()))) {
                 return false;
             }
@@ -116,8 +116,8 @@ public class BasecoreServerHelper {
     public static boolean check(BaseCoreBlockEntity baseCoreBlockEntity, int range) {
         for (BaseCoreBlockEntity baseCoreBlockEntity1 : BASECORE_BLOCK_ENTITIES.values()) {
             if (baseCoreBlockEntity1 != baseCoreBlockEntity) {
-                AABB existingBox = getRangeBox(baseCoreBlockEntity1.getBlockPos(), baseCoreBlockEntity1.getRange());
-                AABB newBox = getRangeBox(baseCoreBlockEntity.getBlockPos(), range);
+                AABB existingBox = getRangeBox(baseCoreBlockEntity1.getBaseCenter(), baseCoreBlockEntity1.getRange());
+                AABB newBox = getRangeBox(baseCoreBlockEntity.getBaseCenter(), range);
                 if (existingBox.intersects(newBox)) {
                     return false;
                 }
@@ -133,7 +133,7 @@ public class BasecoreServerHelper {
     public static BaseCoreBlockEntity getBasecore(Level level, net.minecraft.world.phys.Vec3 vec3, int extraRange) {
         for (BaseCoreBlockEntity baseCoreBlockEntity : BASECORE_BLOCK_ENTITIES.values()) {
             if (baseCoreBlockEntity.getLevel() != level) continue;
-            AABB box = getRangeBox(baseCoreBlockEntity.getBlockPos(), baseCoreBlockEntity.getRange() + extraRange);
+            AABB box = getRangeBox(baseCoreBlockEntity.getBaseCenter(), baseCoreBlockEntity.getRange() + extraRange);
             if (box.contains(vec3)) {
                 return baseCoreBlockEntity;
             }
@@ -148,7 +148,7 @@ public class BasecoreServerHelper {
     public static boolean hasPermission(Level level, net.minecraft.world.phys.Vec3 vec3, UUID uuid) {
         for (BaseCoreBlockEntity baseCoreBlockEntity : BASECORE_BLOCK_ENTITIES.values()) {
             if (baseCoreBlockEntity.getLevel() != level) continue;
-            AABB box = getRangeBox(baseCoreBlockEntity.getBlockPos(), baseCoreBlockEntity.getRange());
+            AABB box = getRangeBox(baseCoreBlockEntity.getBaseCenter(), baseCoreBlockEntity.getRange());
             if (box.contains(vec3)) {
                 return baseCoreBlockEntity.canUse(uuid);
             }

@@ -55,6 +55,14 @@ public class ItemRegister {
     public static final DeferredHolder<Item, Item> Copper_Wire = ITEMS.register("copper_wire", () -> new EasyItem(Rarity.COMMON, 64));
     public static final DeferredHolder<Item, Item> Module_Substrate = ITEMS.register("module_substrate", () -> new EasyItem(Rarity.RARE, 64));
 
+    // 电子工业线（因为内容与红石/铜/玻璃相关，归入机械动力联动内容分组）
+    public static final DeferredHolder<Item, Item> ELECTRONIC_TUBE = ITEMS.register("electronic_tube", () -> new EasyItem(Rarity.UNCOMMON, 64));
+    public static final DeferredHolder<Item, Item> FERRITE_CORE = ITEMS.register("ferrite_core", () -> new EasyItem(Rarity.UNCOMMON, 64));
+    public static final DeferredHolder<Item, Item> TERNARY_CIRCUIT_BOARD = ITEMS.register("ternary_circuit_board", () -> new EasyItem(Rarity.RARE, 64));
+    public static final DeferredHolder<Item, Item> TERNARY_INTEGRATED_CIRCUIT = ITEMS.register("ternary_integrated_circuit", () -> new EasyItem(Rarity.RARE, 64));
+    /** 损坏的电子管：苏式基地计算机修复时产生。 */
+    public static final DeferredHolder<Item, Item> BROKEN_ELECTRONIC_TUBE = ITEMS.register("broken_electronic_tube", () -> new EasyItem(Rarity.COMMON, 64));
+
     public static final DeferredHolder<Item, ProtectionSignalShieldItem> PROTECTION_SIGNAL_SHIELD = ITEMS.register("protection_signal_shield", ProtectionSignalShieldItem::new);
     public static final DeferredHolder<Item, ProsthodonticItem> PROSTHODONTIC = ITEMS.register("prosthodontic", ProsthodonticItem::new);
     public static final DeferredHolder<Item, ElectromagneticPulseBombItem> ElectromagneticPulseBombItem = ITEMS.register("electromagnetic_pulse_bomb", ElectromagneticPulseBombItem::new);

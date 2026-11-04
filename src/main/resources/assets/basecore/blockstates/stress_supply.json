@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "basecore:block/stress_supply",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y": {
+      "model": "basecore:block/stress_supply"
+    },
+    "axis=z": {
+      "model": "basecore:block/stress_supply",
+      "x": 90
+    }
+  }
+}

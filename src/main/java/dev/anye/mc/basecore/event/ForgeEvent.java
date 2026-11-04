@@ -72,6 +72,8 @@ public class ForgeEvent {
         if (event.getLevel() instanceof ServerLevel serverLevel){
             event.getChunk().getBlockEntitiesPos().forEach(blockPos -> {
                 event.getChunk().getBlockEntity(blockPos,BlockEntityRegister.BASECORE.get()).ifPresent(BasecoreServerHelper::addEntity);
+                // 苏式基地计算机同样作为基地核心注册（范围保护 / 成员管理）
+                event.getChunk().getBlockEntity(blockPos,BlockEntityRegister.SOVIET_COMPUTER.get()).ifPresent(BasecoreServerHelper::addEntity);
             });
             // 只做脏标记，由服务器 tick 去重后统一同步（每个区块事件都全量同步会造成进入存档时的卡顿风暴）
             BasecoreServerHelper.markDirty();
@@ -82,6 +84,7 @@ public class ForgeEvent {
         if (event.getLevel() instanceof ServerLevel serverLevel){
             event.getChunk().getBlockEntitiesPos().forEach(blockPos -> {
                 event.getChunk().getBlockEntity(blockPos,BlockEntityRegister.BASECORE.get()).ifPresent(BasecoreServerHelper::delEntity);
+                event.getChunk().getBlockEntity(blockPos,BlockEntityRegister.SOVIET_COMPUTER.get()).ifPresent(BasecoreServerHelper::delEntity);
             });
             BasecoreServerHelper.markDirty();
         }

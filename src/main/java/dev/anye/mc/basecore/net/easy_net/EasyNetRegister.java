@@ -74,6 +74,13 @@ public class EasyNetRegister {
             MemberActionPayload::handle
         );
 
+        // Rename base C2S
+        registrar.playToServer(
+            dev.anye.mc.basecore.net.RenameBasePayload.TYPE,
+            dev.anye.mc.basecore.net.RenameBasePayload.STREAM_CODEC,
+            dev.anye.mc.basecore.net.RenameBasePayload::handle
+        );
+
         // Placement progress S2C
         registrar.playToClient(
             PlacementProgressPayload.TYPE,

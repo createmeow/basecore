@@ -95,9 +95,12 @@
   "error.basecore.pssi.no_basecore": "No Basecore",
   "error.basecore.pssi.has_permission": "This Basecore Is Safe",
   "error.basecore.pssi.interfered": "is Interfered",
+  "error.basecore.pssi.failed": "§4Jamming failed: the target is too resistant",
   "error.basecore.prosthodontic.health_full": "health full",
 
   "gui.basecore.basecore.interference": "Interference : %s",
+  "gui.basecore.basecore.renamed": "§aBase renamed to %s",
+  "gui.basecore.energy": "Energy %s/%s Rs\nRefill with redstone (10 Rs) or block of redstone (90 Rs)",
   "block.basecore.hash_chest": "Hash Chest",
   "block_entity.basecore.hash_chest": "Hash Chest",
   "block_entity.basecore.defend": "Defend",
@@ -131,5 +134,30 @@
   "tooltip.basecore.loot_part_bundle.range": "§7Contains %s~%s parts",
   "gui.basecore.purse.store": "Store",
   "gui.basecore.purse.extract": "Extract",
-  "gui.basecore.purse.balance": "Parts: %s"
+  "gui.basecore.purse.balance": "Parts: %s",
+
+  "block.basecore.stress_supply": "Uninterruptible Stress Supply",
+  "block.basecore.soviet_computer": "Soviet Base Computer",
+  "block.basecore.soviet_computer_casing": "Soviet Computer Casing",
+  "block.basecore.electroluminescent_display": "Electroluminescent Display",
+
+  "item.basecore.electronic_tube": "Electronic Tube",
+  "item.basecore.ferrite_core": "Ferrite Magnetized Core",
+  "item.basecore.ternary_circuit_board": "Ternary Circuit Board",
+  "item.basecore.ternary_integrated_circuit": "Ternary Integrated Circuit",
+  "item.basecore.broken_electronic_tube": "Broken Vacuum Tube",
+
+  "item.basecore.stress_supply.desc": "§7Stores 1800 air, outputs 32 RPM / 128 SU, consumes 1 air every 2s; syncs health with a nearby base core",
+  "item.basecore.electronic_tube.desc": "§7Basic component of ternary electronics",
+  "item.basecore.ferrite_core.desc": "§7Magnetic core used in ternary circuit boards",
+  "item.basecore.ternary_circuit_board.desc": "§7A ternary circuit board",
+  "item.basecore.ternary_integrated_circuit.desc": "§7A highly integrated ternary circuit",
+  "block.basecore.soviet_computer.desc": "§73x3x3 multiblock; a single electroluminescent display on any middle edge is enough. Works like a base core, randomly breaks down and can be repaired with vacuum tubes",
+  "block.basecore.soviet_computer.desc.temperature": "§7Ternary circuitry tolerates wide ambient temperature and supply voltage ranges (immune to cold shutdown)",
+
+  "error.basecore.cold_sweat.gui": "§bToo cold: the LCD display cannot operate",
+  "error.basecore.cold_sweat.shutdown": "§bToo cold: the base core has completely shut down",
+  "error.basecore.soviet_computer.incomplete": "§4Incomplete structure: place 1 electroluminescent display in any middle edge slot",
+  "error.basecore.soviet_computer.broken": "§c%s malfunctioned: insert an electronic tube into its slots to repair it",
+  "error.basecore.soviet_computer.no_space": "§4Not enough space: a clear 3x3x3 area is required (controller sits at the bottom center)"
 }

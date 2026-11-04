@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "E": {
+      "item": "basecore:electronic_tube"
+    },
+    "F": {
+      "item": "basecore:ferrite_core"
+    },
+    "Z": {
+      "item": "minecraft:repeater"
+    }
+  },
+  "pattern": [
+    "ZEZ",
+    "EFE",
+    " E "
+  ],
+  "result": {
+    "count": 1,
+    "id": "basecore:ternary_circuit_board"
+  }
+}

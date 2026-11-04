@@ -17,6 +17,7 @@ public class MenuTypeRegister {
     public static final DeferredHolder<MenuType<?>, MenuType<DefendMenu>> DEFEND_MENU = registryMenuType("defend", DefendMenu::new);
     public static final DeferredHolder<MenuType<?>, MenuType<HashChestMenu>> HashChest = registryMenuType("hash_chest", HashChestMenu::new);
     public static final DeferredHolder<MenuType<?>, MenuType<BasecoreUpgradeMenu>> BASECORE_UPGRADE_MENU = registryMenuType("basecore_upgrade", BasecoreUpgradeMenu::new);
+    public static final DeferredHolder<MenuType<?>, MenuType<SovietComputerMenu>> SOVIET_COMPUTER_MENU = registryMenuType("soviet_computer", SovietComputerMenu::new);
 
     private static <T extends AbstractContainerMenu> DeferredHolder<MenuType<?>, MenuType<T>> registryMenuType(String name, IContainerFactory<T> factory){
         return MENUS.register(name, () -> IMenuTypeExtension.create(factory));

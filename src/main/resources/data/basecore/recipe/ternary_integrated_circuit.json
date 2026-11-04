@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "basecore:ternary_circuit_board"
+    },
+    "W": {
+      "item": "basecore:wire"
+    }
+  },
+  "pattern": [
+    "BWB",
+    "WBW",
+    "BWB"
+  ],
+  "result": {
+    "count": 1,
+    "id": "basecore:ternary_integrated_circuit"
+  }
+}

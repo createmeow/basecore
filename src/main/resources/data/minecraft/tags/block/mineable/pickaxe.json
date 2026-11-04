@@ -4,6 +4,10 @@
     "basecore:basecore",
     "basecore:defend",
     "basecore:damage",
-    "basecore:hash_chest"
+    "basecore:hash_chest",
+    "basecore:stress_supply",
+    "basecore:soviet_computer",
+    "basecore:soviet_computer_casing",
+    "basecore:electroluminescent_display"
   ]
 }

@@ -31,6 +31,26 @@ import java.util.UUID;
 public class PlacementHelper {
 
     /**
+     * 计算方块最终会被放置到的位置；若目标及相邻位置都不可用则返回 null。
+     */
+    @Nullable
+    public static BlockPos resolvePlacementPos(UseOnContext ctx) {
+        Level level = ctx.getLevel();
+        BlockPlaceContext placeContext = new BlockPlaceContext(ctx);
+        BlockPos targetPos = placeContext.getClickedPos();
+        BlockState existingState = level.getBlockState(targetPos);
+        if (!existingState.isAir() && !existingState.canBeReplaced()) {
+            // Try adjacent position
+            targetPos = placeContext.getClickedPos().relative(placeContext.getClickedFace());
+            BlockState adjacentState = level.getBlockState(targetPos);
+            if (!adjacentState.isAir() && !adjacentState.canBeReplaced()) {
+                return null;
+            }
+        }
+        return targetPos;
+    }
+
+    /**
      * Attempt to start placing a block with a 30s timer.
      * Called from BlockItem.useOn().
      *
@@ -40,18 +60,9 @@ public class PlacementHelper {
         Level level = ctx.getLevel();
 
         // Calculate where the block would be placed
-        BlockPlaceContext placeContext = new BlockPlaceContext(ctx);
-        BlockPos targetPos = placeContext.getClickedPos();
-        BlockState existingState = level.getBlockState(targetPos);
-
-        // Check if the position is valid (replaceable or air)
-        if (!existingState.isAir() && !existingState.canBeReplaced()) {
-            // Try adjacent position
-            targetPos = placeContext.getClickedPos().relative(placeContext.getClickedFace());
-            BlockState adjacentState = level.getBlockState(targetPos);
-            if (!adjacentState.isAir() && !adjacentState.canBeReplaced()) {
-                return false;
-            }
+        BlockPos targetPos = resolvePlacementPos(ctx);
+        if (targetPos == null) {
+            return false;
         }
 
         // Check if there's already a placement here

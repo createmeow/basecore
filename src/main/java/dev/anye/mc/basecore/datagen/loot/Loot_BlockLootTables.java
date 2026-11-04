@@ -18,9 +18,13 @@ public class Loot_BlockLootTables extends BlockLootSubProvider {
         dropSelf(BlockRegister.BASE_CORE.get());
         dropSelf(BlockRegister.DEFEND.get());
         dropSelf(BlockRegister.HASH_CHEST.get());
+        dropSelf(BlockRegister.STRESS_SUPPLY.get());
+        dropSelf(BlockRegister.SOVIET_COMPUTER.get());
+        dropSelf(BlockRegister.ELECTROLUMINESCENT_DISPLAY.get());
         // Damage and Nothing blocks drop nothing (no BlockItem registered)
         add(BlockRegister.Damage.get(), noDrop());
         add(BlockRegister.NOTHING.get(), noDrop());
+        add(BlockRegister.SOVIET_COMPUTER_CASING.get(), noDrop());
     }
     @Override
     protected @NotNull Iterable<Block> getKnownBlocks() {

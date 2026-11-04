@@ -47,6 +47,15 @@ public class BaseCoreBlock extends FunctionEntityBlock {
         if (pPlayer instanceof ServerPlayer serverPlayer){
             BlockEntity entity = pLevel.getBlockEntity(pPos);
             if (entity instanceof BaseCoreBlockEntity baseCoreBlockEntity){
+                // 冷汗联动：低温导致液晶屏失效 / 彻底停机
+                if (dev.anye.mc.basecore.integration.coldsweat.ColdSweatCompat.isShutdown(baseCoreBlockEntity)) {
+                    serverPlayer.sendSystemMessage(net.minecraft.network.chat.Component.translatable("error.basecore.cold_sweat.shutdown"));
+                    return InteractionResult.FAIL;
+                }
+                if (dev.anye.mc.basecore.integration.coldsweat.ColdSweatCompat.isGuiDisabled(baseCoreBlockEntity)) {
+                    serverPlayer.sendSystemMessage(net.minecraft.network.chat.Component.translatable("error.basecore.cold_sweat.gui"));
+                    return InteractionResult.FAIL;
+                }
                 if (BasecoreConfig.isComponentMode()) {
                     // Component mode: check permission first
                     if (!baseCoreBlockEntity.canUse(serverPlayer.getUUID())) {

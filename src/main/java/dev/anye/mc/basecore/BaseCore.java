@@ -53,11 +53,18 @@ public class BaseCore {
 
         modEventBus.addListener(RegisterPayloadHandlersEvent.class, EasyNetRegister::register);
 
+        // 能源填充量数据映射（数据包可覆盖；默认红石 10 Rs / 红石块 90 Rs）
+        modEventBus.addListener(net.neoforged.neoforge.registries.datamaps.RegisterDataMapTypesEvent.class,
+                dev.anye.mc.basecore.energy.EnergySources::register);
+
         // Register recipe condition codec for component mode
         modEventBus.addListener(RegisterEvent.class, event -> {
             event.register(ResourceKey.createRegistryKey(ResourceLocation.parse("neoforge:condition_codecs")),
                     ResourceLocation.parse("basecore:component_mode_disabled"),
                     () -> ComponentModeDisabledCondition.CODEC);
+            event.register(ResourceKey.createRegistryKey(ResourceLocation.parse("neoforge:condition_codecs")),
+                    ResourceLocation.parse("basecore:integration_enabled"),
+                    () -> dev.anye.mc.basecore.datagen.condition.IntegrationEnabledCondition.CODEC);
         });
 
         // Register built-in upgrades through the public API
