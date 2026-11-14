@@ -56,6 +56,15 @@ public abstract class BasecoreModuleItem extends BaseModuleItem {
         if (defMax > 0) {
             pTooltip.add(Component.literal("  - ").append(Component.translatable("block.basecore.defend")).append(" ").append(String.valueOf(defMax)).append(Component.translatable("tooltip.basecore.module.piece")));
         }
+        // 苏式基地计算机继承基地核心的模块功能，配置关闭时不再展示
+        if (bcMax > 0 && dev.anye.mc.basecore.config.BasecoreConfig.isSovietComputerEnabled()) {
+            pTooltip.add(Component.literal("  - ")
+                    .append(Component.translatable("block.basecore.soviet_computer")
+                            .withStyle(net.minecraft.ChatFormatting.GOLD))
+                    .append(" ")
+                    .append(String.valueOf(bcMax))
+                    .append(Component.translatable("tooltip.basecore.module.piece")));
+        }
         super.appendHoverText(pStack, pContext, pTooltip, pFlag);
     }
 }

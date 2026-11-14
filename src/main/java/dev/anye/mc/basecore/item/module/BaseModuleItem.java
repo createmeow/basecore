@@ -2,7 +2,10 @@ package dev.anye.mc.basecore.item.module;
 
 import dev.anye.mc.basecore.block.entity.basecore.BaseCoreBlockEntity;
 import dev.anye.mc.basecore.item.EasyItem;
+import dev.anye.mc.basecore.item.component.ItemComponentInit;
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.Unit;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -10,7 +13,9 @@ import net.minecraft.world.level.block.state.BlockState;
 public abstract class BaseModuleItem extends EasyItem {
     private final int maxLevel;
     protected BaseModuleItem(int maxLevel) {
-        super(Rarity.RARE, maxLevel);
+        // 模块默认标记为苏式黄色显示：在苏式基地计算机界面中切换为 _yellow 材质
+        super(new Properties().stacksTo(maxLevel).rarity(Rarity.RARE)
+                .component(ItemComponentInit.SOVIET_YELLOW_COMPONENT, Unit.INSTANCE));
         this.maxLevel = maxLevel;
     }
     public int fixLevel(int level ){

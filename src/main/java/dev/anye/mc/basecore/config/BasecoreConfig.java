@@ -214,6 +214,16 @@ public class BasecoreConfig {
         @Expose
         @SerializedName("energy_refuel_seconds")
         public int energyRefuelSeconds = 10;
+
+        /** 是否启用 Rs 能源系统；关闭后基地不再消耗能源、也不接受红石补充。 */
+        @Expose
+        @SerializedName("energy_enabled")
+        public boolean energyEnabled = true;
+
+        /** 是否启用苏式基地计算机玩法；关闭后无法放置、已放置的结构停止运行。 */
+        @Expose
+        @SerializedName("soviet_computer_enabled")
+        public boolean sovietComputerEnabled = true;
     }
 
     public static class UpgradeCosts {
@@ -657,6 +667,18 @@ public class BasecoreConfig {
         ensureLoaded();
         int seconds = INSTANCE.balance.energyRefuelSeconds;
         return Math.max(20, (seconds > 0 ? seconds : 10) * 20);
+    }
+
+    /** 是否启用 Rs 能源系统。 */
+    public static boolean isEnergyEnabled() {
+        ensureLoaded();
+        return INSTANCE.balance.energyEnabled;
+    }
+
+    /** 是否启用苏式基地计算机玩法。 */
+    public static boolean isSovietComputerEnabled() {
+        ensureLoaded();
+        return INSTANCE.balance.sovietComputerEnabled;
     }
 
     private static void ensureLoaded() {

@@ -24,6 +24,14 @@ import java.util.List;
 
 public class BasecoreUpgradeMenu extends AbstractContainerMenu {
     private static final Logger LOGGER = LogUtils.getLogger();
+    /** 内容区宽度：与 9 格背包等宽。 */
+    public static final int CONTENT_WIDTH = 9 * 18;
+    /** 能源槽 / 背包 / 快捷栏的纵向坐标（横向由 contentX 动态决定）。 */
+    public static final int ENERGY_SLOT_Y = 110;
+    public static final int MAIN_INV_Y = 138;
+    public static final int HOTBAR_Y = 194;
+    private boolean hasEnergySlot;
+
     private final BaseCoreBlockEntity baseCore;
     public BaseCoreBlockEntity getBaseCore() { return baseCore; }
     /** Turret position for defense mode switching; null for base core */
@@ -31,8 +39,21 @@ public class BasecoreUpgradeMenu extends AbstractContainerMenu {
     public net.minecraft.core.BlockPos getDefendPos() { return defendPos; }
     public boolean isDefend() { return isDefend; }
     private final boolean isDefend;
+    /** 目标是否为苏式基地计算机（决定主题、方块校验与升级项范围）。 */
+    private final boolean isSoviet;
+    /** 内容区左端：苏式计算机居中（34），基地核心靠左（8）。 */
+    private final int contentX;
+    private final net.minecraft.world.inventory.ContainerData energyData;
     private List<UpgradeEntry> entries = new ArrayList<>();
     private ServerPlayer serverPlayer;
+
+    public int getContentX() {
+        return contentX;
+    }
+
+    public int getContentRight() {
+        return contentX + CONTENT_WIDTH;
+    }
 
     public BasecoreUpgradeMenu(int containerId, Inventory inv, FriendlyByteBuf buf) {
         this(containerId, inv, inv.player.level().getBlockEntity(buf.readBlockPos()), buf.readBoolean());
@@ -55,9 +76,61 @@ public class BasecoreUpgradeMenu extends AbstractContainerMenu {
         } else {
             this.baseCore = null;
         }
+        this.isSoviet = this.baseCore instanceof dev.anye.mc.basecore.block.soviet_computer.SovietComputerBlockEntity;
+        // 面板宽度按内容区收缩，两种机器内容区都居中（左右各 8px）
+        this.contentX = 8;
         if (inv.player instanceof ServerPlayer sp) {
             this.serverPlayer = sp;
         }
+
+        // 能源数据：服务器端实时读取方块实体，客户端由数据槽同步
+        if (!inv.player.level().isClientSide() && baseCore != null) {
+            this.energyData = new net.minecraft.world.inventory.ContainerData() {
+                @Override
+                public int get(int i) {
+                    return i == 0 ? BasecoreUpgradeMenu.this.baseCore.getEnergy()
+                            : BasecoreUpgradeMenu.this.baseCore.getMaxEnergy();
+                }
+
+                @Override
+                public void set(int i, int value) {
+                }
+
+                @Override
+                public int getCount() {
+                    return 2;
+                }
+            };
+        } else {
+            this.energyData = new net.minecraft.world.inventory.SimpleContainerData(2);
+        }
+        this.addDataSlots(this.energyData);
+
+        // 组件模式的能源输入槽：仅基地核心/苏式计算机，防御炮或能源系统关闭时不需要
+        this.hasEnergySlot = !isDefend && baseCore != null
+                && dev.anye.mc.basecore.config.BasecoreConfig.isEnergyEnabled();
+        if (hasEnergySlot) {
+            this.addSlot(new net.neoforged.neoforge.items.SlotItemHandler(baseCore.getEnergySlotHandler(), 0,
+                    contentX, ENERGY_SLOT_Y) {
+                @Override
+                public boolean mayPlace(ItemStack stack) {
+                    return dev.anye.mc.basecore.energy.EnergySources.isEnergySource(stack);
+                }
+            });
+        }
+
+        // 玩家背包与快捷栏：组件模式也需要从背包放入红石补充能源
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 9; col++) {
+                this.addSlot(new net.minecraft.world.inventory.Slot(inv, col + row * 9 + 9,
+                        contentX + col * 18, MAIN_INV_Y + row * 18));
+            }
+        }
+        for (int col = 0; col < 9; col++) {
+            this.addSlot(new net.minecraft.world.inventory.Slot(inv, col,
+                    contentX + col * 18, HOTBAR_Y));
+        }
+
         rebuildEntries();
         // Send initial data to client (parts count + entry list)
         syncToClient();
@@ -102,6 +175,19 @@ public class BasecoreUpgradeMenu extends AbstractContainerMenu {
 
     public List<UpgradeEntry> getEntries() {
         return entries;
+    }
+
+    /** 目标是否为苏式基地计算机。 */
+    public boolean isSoviet() {
+        return isSoviet;
+    }
+
+    public int getEnergy() {
+        return energyData.get(0);
+    }
+
+    public int getMaxEnergy() {
+        return Math.max(1, energyData.get(1));
     }
 
     /**
@@ -308,7 +394,28 @@ public class BasecoreUpgradeMenu extends AbstractContainerMenu {
 
     @Override
     public @NotNull ItemStack quickMoveStack(Player player, int i) {
-        return ItemStack.EMPTY;
+        net.minecraft.world.inventory.Slot slot = this.slots.get(i);
+        if (!slot.hasItem()) return ItemStack.EMPTY;
+        ItemStack stack = slot.getItem();
+        ItemStack copy = stack.copy();
+        if (hasEnergySlot) {
+            if (i == 0) {
+                // 能源槽 -> 背包
+                if (!moveItemStackTo(stack, 1, this.slots.size(), true)) return ItemStack.EMPTY;
+            } else {
+                // 背包中的能源物品 -> 能源槽
+                if (!dev.anye.mc.basecore.energy.EnergySources.isEnergySource(stack)) return ItemStack.EMPTY;
+                if (!moveItemStackTo(stack, 0, 1, false)) return ItemStack.EMPTY;
+            }
+        } else {
+            return ItemStack.EMPTY;
+        }
+        if (stack.isEmpty()) {
+            slot.set(ItemStack.EMPTY);
+        } else {
+            slot.setChanged();
+        }
+        return copy;
     }
 
     @Override
@@ -320,6 +427,6 @@ public class BasecoreUpgradeMenu extends AbstractContainerMenu {
         }
         if (baseCore == null) return false;
         return stillValid(ContainerLevelAccess.create(player.level(), baseCore.getBlockPos()),
-                player, BlockRegister.BASE_CORE.get());
+                player, isSoviet ? BlockRegister.SOVIET_COMPUTER.get() : BlockRegister.BASE_CORE.get());
     }
 }

@@ -26,6 +26,13 @@ public class SovietComputerBlockItem extends BlockItem {
 
     @Override
     public @NotNull InteractionResult useOn(UseOnContext context) {
+        if (!dev.anye.mc.basecore.config.BasecoreConfig.isSovietComputerEnabled()) {
+            if (context.getPlayer() instanceof ServerPlayer serverPlayer) {
+                serverPlayer.displayClientMessage(
+                        Component.translatable("error.basecore.soviet_computer.disabled"), true);
+            }
+            return InteractionResult.FAIL;
+        }
         if (context.getPlayer() instanceof ServerPlayer serverPlayer) {
             // 先校验 3x3x3 空间，避免消耗物品后才发现无法组装
             BlockPos targetPos = PlacementHelper.resolvePlacementPos(context);

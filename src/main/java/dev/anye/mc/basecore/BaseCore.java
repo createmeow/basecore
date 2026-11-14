@@ -57,6 +57,10 @@ public class BaseCore {
         modEventBus.addListener(net.neoforged.neoforge.registries.datamaps.RegisterDataMapTypesEvent.class,
                 dev.anye.mc.basecore.energy.EnergySources::register);
 
+        // 允许漏斗向两种基地输入能源物品（红石 / 红石块），但不允许抽出
+        modEventBus.addListener(net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent.class,
+                BaseCore::registerCapabilities);
+
         // Register recipe condition codec for component mode
         modEventBus.addListener(RegisterEvent.class, event -> {
             event.register(ResourceKey.createRegistryKey(ResourceLocation.parse("neoforge:condition_codecs")),
@@ -65,10 +69,33 @@ public class BaseCore {
             event.register(ResourceKey.createRegistryKey(ResourceLocation.parse("neoforge:condition_codecs")),
                     ResourceLocation.parse("basecore:integration_enabled"),
                     () -> dev.anye.mc.basecore.datagen.condition.IntegrationEnabledCondition.CODEC);
+            event.register(ResourceKey.createRegistryKey(ResourceLocation.parse("neoforge:condition_codecs")),
+                    ResourceLocation.parse("basecore:soviet_computer_enabled"),
+                    () -> dev.anye.mc.basecore.datagen.condition.SovietComputerEnabledCondition.CODEC);
         });
 
         // Register built-in upgrades through the public API
         registerBuiltinUpgrades();
+    }
+
+    /** 注册只进不出的物品能力，供漏斗等自动输入能源。 */
+    private static void registerCapabilities(net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent event) {
+        event.registerBlockEntity(net.neoforged.neoforge.capabilities.Capabilities.ItemHandler.BLOCK,
+                BlockEntityRegister.BASECORE.get(), (be, side) -> be.getEnergyInputHandler());
+        event.registerBlockEntity(net.neoforged.neoforge.capabilities.Capabilities.ItemHandler.BLOCK,
+                BlockEntityRegister.SOVIET_COMPUTER.get(), (be, side) -> be.getEnergyInputHandler());
+
+        // 苏式基地计算机是 3x3x3 多方块，控制器位于结构内部，外露的只有外壳与显示器。
+        // 这两个部件没有任何方块实体，因此需要按方块注册能力，把能源输入转发给所属控制器，
+        // 否则漏斗贴在侧面/顶面时找不到物品处理器，能源无法输入。
+        event.registerBlock(net.neoforged.neoforge.capabilities.Capabilities.ItemHandler.BLOCK,
+                (level, pos, state, blockEntity, side) -> {
+                    dev.anye.mc.basecore.block.soviet_computer.SovietComputerBlockEntity computer =
+                            dev.anye.mc.basecore.block.soviet_computer.SovietComputerStructure.findController(level, pos);
+                    return computer == null ? null : computer.getEnergyInputHandler();
+                },
+                BlockRegister.SOVIET_COMPUTER_CASING.get(),
+                BlockRegister.ELECTROLUMINESCENT_DISPLAY.get());
     }
 
     /** Register all built-in upgrades via {@link BasecoreUpgradeApi} (component mode upgrade UI). */

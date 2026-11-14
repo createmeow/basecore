@@ -36,7 +36,8 @@ public class EffectModuleItem extends BasecoreModuleItem {
     public void tick(BaseCoreBlockEntity baseCoreBlockEntity, Level level, BlockPos blockPos, BlockState blockState, int count) {
         if (tickTime <= 0) {
             tickTime = 20; // reapply every 1 second (20 ticks)
-            MobEffectInstance mobEffectInstance = new MobEffectInstance(mobEffect, time, Math.min(count - 1, 2));
+            // visible=false：基地提供的效果不显示粒子（GUI 图标仍保留）
+            MobEffectInstance mobEffectInstance = new MobEffectInstance(mobEffect, time, Math.min(count - 1, 2), false, false, true);
             int range = baseCoreBlockEntity.getRange();
             level.getEntities(null, new AABB(blockPos).inflate(range)).forEach(entity -> {
                 if (entity instanceof ServerPlayer serverPlayer) {

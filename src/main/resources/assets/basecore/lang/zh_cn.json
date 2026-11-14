@@ -101,7 +101,8 @@
   "error.basecore.prosthodontic.health_full": "生命值满",
   "gui.basecore.basecore.interference": "已被入侵，剩余时间 : %s",
   "gui.basecore.basecore.renamed": "§a基地名称已改为 %s",
-  "gui.basecore.energy": "能源 %s/%s Rs\n放入红石（10 Rs）或红石块（90 Rs）补充",
+  "gui.basecore.energy": "§e能源 %s/%s Rs",
+  "gui.basecore.energy_hint": "§e放入红石（10 Rs）或红石块（90 Rs）补充",
 
   "block.basecore.hash_chest": "加密容器",
   "block_entity.basecore.hash_chest": "加密容器",
@@ -162,5 +163,6 @@
   "error.basecore.cold_sweat.shutdown": "§b环境温度过低，基地核心已彻底停止工作",
   "error.basecore.soviet_computer.incomplete": "§4结构未完成：请在中层四边任一空位放置 1 个电致发光显示器",
   "error.basecore.soviet_computer.broken": "§c%s 发生故障：请向机器的槽位中放入电子管来修复",
-  "error.basecore.soviet_computer.no_space": "§4空间不足：需要 3x3x3 的空旷区域（控制器放置在底层中心）"
+  "error.basecore.soviet_computer.no_space": "§4空间不足：需要 3x3x3 的空旷区域（控制器放置在底层中心）",
+  "error.basecore.soviet_computer.disabled": "§c苏式基地计算机已在配置中被禁用"
 }

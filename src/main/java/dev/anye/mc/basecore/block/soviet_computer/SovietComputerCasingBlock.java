@@ -26,8 +26,17 @@ public class SovietComputerCasingBlock extends Block {
     }
 
     @Override
+    public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
+        super.onPlace(state, level, pos, oldState, movedByPiston);
+        // 外壳按方块注册了物品能力（转发给控制器），能力结果会按坐标缓存，
+        // 因此放置/移除时必须手动失效，否则漏斗仍会读到旧的空结果。
+        if (!level.isClientSide) level.invalidateCapabilities(pos);
+    }
+
+    @Override
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
         if (!level.isClientSide && !state.is(newState.getBlock())) {
+            level.invalidateCapabilities(pos);
             SovietComputerStructure.destroyControllerForPart(level, pos);
         }
         super.onRemove(state, level, pos, newState, movedByPiston);

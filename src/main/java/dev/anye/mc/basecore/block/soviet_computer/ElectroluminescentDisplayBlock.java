@@ -28,4 +28,19 @@ public class ElectroluminescentDisplayBlock extends Block {
     public @NotNull InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         return SovietComputerStructure.interact(level, pos, player);
     }
+
+    @Override
+    public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
+        super.onPlace(state, level, pos, oldState, movedByPiston);
+        // 显示器按方块注册了物品能力（转发给控制器），能力结果按坐标缓存，需手动失效。
+        if (!level.isClientSide) level.invalidateCapabilities(pos);
+    }
+
+    @Override
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        if (!level.isClientSide && !state.is(newState.getBlock())) {
+            level.invalidateCapabilities(pos);
+        }
+        super.onRemove(state, level, pos, newState, movedByPiston);
+    }
 }

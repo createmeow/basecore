@@ -120,6 +120,8 @@ public class SovietComputerBlockEntity extends BaseCoreBlockEntity {
     @Override
     public void tick(Level level, BlockPos pos, BlockState state) {
         if (level.isClientSide) return;
+        // 配置中关闭苏式计算机玩法时，已有结构也停止运行
+        if (!BasecoreConfig.isSovietComputerEnabled()) return;
 
         if (getHealth() <= 0) {
             meltdown(level, pos);

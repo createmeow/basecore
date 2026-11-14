@@ -42,6 +42,8 @@ public class SovietComputerMemberScreen extends AbstractContainerScreen<SovietCo
     private final Inventory playerInv;
     private EditBox memberInput;
     private EditBox nameInput;
+    private int memberMaxLength = 16;
+    private int nameMaxLength = RenameBasePayload.MAX_NAME_LENGTH;
 
     public SovietComputerMemberScreen(SovietComputerMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
@@ -58,10 +60,10 @@ public class SovietComputerMemberScreen extends AbstractContainerScreen<SovietCo
         this.leftPos = (this.width - this.imageWidth) / 2;
         this.topPos = (this.height - this.imageHeight) / 2;
 
-        memberInput = createInput(INPUT_TOP, 16);
+        memberInput = createInput(INPUT_TOP, memberMaxLength);
         addRenderableWidget(memberInput);
 
-        nameInput = createInput(NAME_TOP, RenameBasePayload.MAX_NAME_LENGTH);
+        nameInput = createInput(NAME_TOP, nameMaxLength);
         SovietComputerBlockEntity be = this.menu.getComputer();
         if (be != null) nameInput.setValue(be.getName());
         addRenderableWidget(nameInput);
@@ -129,6 +131,30 @@ public class SovietComputerMemberScreen extends AbstractContainerScreen<SovietCo
         graphics.fill(x2 - 1, y1, x2, y2, color);
     }
 
+    /**
+     * 原版 EditBox 的插入光标颜色硬编码为灰白，无法通过 API 修改，
+     * 因此在控件渲染完成后按主题色覆盖绘制同一位置的 1px 竖线。
+     */
+    private void drawThemedCursor(GuiGraphics graphics, EditBox box, int maxLength) {
+        if (box == null || !box.isFocused()) return;
+        String text = box.getValue();
+        int cursor = Math.min(box.getCursorPosition(), text.length());
+        // 与原版一致：仅当光标右侧有字符或文本已达最大长度时绘制竖线光标；
+        // 否则原版绘制下划线 "_"，此时无需覆盖。
+        boolean flag2 = cursor < text.length() || text.length() >= maxLength;
+        if (!flag2) return;
+        int innerWidth = Math.max(1, box.getWidth());
+        int displayPos = 0;
+        while (displayPos < cursor && this.font.width(text.substring(displayPos, cursor)) > innerWidth) {
+            displayPos++;
+        }
+        // 与原版插入光标完全重合：drawString(带阴影) 返回 x+宽+1，光标再左移 1 → getX()+宽；
+        // 竖线从 y-1 起、高 11。
+        int cursorX = box.getX() + this.font.width(text.substring(displayPos, cursor));
+        int top = box.getY() - 1;
+        graphics.fill(cursorX, top, cursorX + 1, top + 11, SovietComputerScreen.YELLOW);
+    }
+
     @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
         graphics.drawString(this.font, "苏式基地计算机", 6, 6, SovietComputerScreen.YELLOW, false);
@@ -154,9 +180,10 @@ public class SovietComputerMemberScreen extends AbstractContainerScreen<SovietCo
                 NAME_TOP + 4, SovietComputerScreen.YELLOW, false);
 
         boolean broken = this.menu.isBroken();
-        boolean noEnergy = this.menu.getEnergy() <= 0;
+        boolean noEnergy = dev.anye.mc.basecore.config.BasecoreConfig.isEnergyEnabled()
+                && this.menu.getEnergy() <= 0;
         String line = this.menu.getHealth() + "/" + this.menu.getMaxHealth() + "  "
-                + (broken ? "[WARN] 故障 需电子管修复" : (noEnergy ? "能源不足" : "正常工作"));
+                + (broken ? "[WARN] 故障 需电子管修复" : (noEnergy ? "[WARN] 能源不足" : "正常工作"));
         graphics.drawString(this.font, line, 6, STATUS_Y, SovietComputerScreen.YELLOW, false);
     }
 
@@ -175,6 +202,9 @@ public class SovietComputerMemberScreen extends AbstractContainerScreen<SovietCo
         for (Renderable renderable : this.renderables) {
             renderable.render(graphics, mouseX, mouseY, partialTick);
         }
+        // 原版 EditBox 光标固定灰白，这里覆盖为黄色主题光标
+        drawThemedCursor(graphics, memberInput, memberMaxLength);
+        drawThemedCursor(graphics, nameInput, nameMaxLength);
         // renderLabels 使用相对 GUI 左上角的坐标，需要手动平移（super.render 才会代劳）
         graphics.pose().pushPose();
         graphics.pose().translate((float) this.leftPos, (float) this.topPos, 0.0F);

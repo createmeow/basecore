@@ -15,6 +15,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -47,6 +48,16 @@ public class BaseCoreBlockEntity extends ToDamageBlockEntity<BasecoreModuleItem>
     private int refuelTick = 0;
     /** 当前能源是否足以继续运行。 */
     private boolean energyPowered = false;
+    /** 漏斗专用的只进不出物品处理器，延迟创建。 */
+    private net.neoforged.neoforge.items.IItemHandler energyInputHandler;
+    /** 零件升级界面中独立的能源输入槽（红石 / 红石块），与模块槽位分离。 */
+    private final net.neoforged.neoforge.items.ItemStackHandler energySlot =
+            new net.neoforged.neoforge.items.ItemStackHandler(1) {
+                @Override
+                protected void onContentsChanged(int slot) {
+                    BaseCoreBlockEntity.this.setChanged();
+                }
+            };
 
     public BaseCoreBlockEntity(BlockPos pPos, BlockState pBlockState) {
         this(BlockEntityRegister.BASECORE.get(), pPos, pBlockState, inventorySize);
@@ -185,9 +196,9 @@ public class BaseCoreBlockEntity extends ToDamageBlockEntity<BasecoreModuleItem>
         setEnergy(energy + value);
     }
 
-    /** 当前能源是否足够运行；为 false 时模块效果与怪物攻核停止。 */
+    /** 当前能源是否足够运行；为 false 时模块效果与怪物攻核停止。能源系统关闭时恒为 true。 */
     public boolean isEnergyPowered() {
-        return energyPowered;
+        return !dev.anye.mc.basecore.config.BasecoreConfig.isEnergyEnabled() || energyPowered;
     }
 
     /** 每消耗 1 Rs 所需的 tick 数；苏式基地计算机覆写为 1 秒。 */
@@ -197,20 +208,75 @@ public class BaseCoreBlockEntity extends ToDamageBlockEntity<BasecoreModuleItem>
 
     /**
      * 每 {@code balance.energy_refuel_seconds}（默认 10 秒）尝试一次：
-     * 从容器中取 1 个能源物品补充 Rs；若剩余可填充量小于该物品提供的 Rs，则不消耗（避免浪费）。
+     * 优先使用 GUI 中的专用能源槽，其次扫描模块容器；若剩余可填充量小于该物品提供的 Rs，则不消耗（避免浪费）。
      */
     private void tryRefuelEnergy() {
         int room = getMaxEnergy() - energy;
         if (room <= 0) return;
+        if (consumeEnergyItem(energySlot, 0, room)) return;
         for (int i = 0; i < items.getSlots(); i++) {
-            int rs = dev.anye.mc.basecore.energy.EnergySources.getRs(items.getStackInSlot(i));
-            if (rs <= 0 || rs > room) continue;
-            items.extractItem(i, 1, false);
-            energy += rs;
-            energyPowered = true;
-            super.setChanged();
-            return;
+            if (consumeEnergyItem(items, i, room)) return;
         }
+    }
+
+    private boolean consumeEnergyItem(net.neoforged.neoforge.items.ItemStackHandler handler, int slot, int room) {
+        int rs = dev.anye.mc.basecore.energy.EnergySources.getRs(handler.getStackInSlot(slot));
+        if (rs <= 0 || rs > room) return false;
+        handler.extractItem(slot, 1, false);
+        energy += rs;
+        energyPowered = true;
+        super.setChanged();
+        return true;
+    }
+
+    /** 零件升级界面绑定的独立能源输入槽（容量 1 格，只接受能源物品）。 */
+    public net.neoforged.neoforge.items.ItemStackHandler getEnergySlotHandler() {
+        return energySlot;
+    }
+
+    /**
+     * 供漏斗使用的物品处理器：只接受能源物品（默认红石 / 红石块），且不允许抽出。
+     * 通过 {@code Capabilities.ItemHandler.BLOCK} 暴露给其他方块。
+     * <p>
+     * 直接对准 GUI 中的专用能源槽，而不是模块容器——否则红石会被塞进模块槽位，
+     * 组件玩法下玩家看不到这些物品，会误以为漏斗没能输入。
+     */
+    public net.neoforged.neoforge.items.IItemHandler getEnergyInputHandler() {
+        if (energyInputHandler == null) {
+            energyInputHandler = new net.neoforged.neoforge.items.IItemHandler() {
+                @Override
+                public int getSlots() {
+                    return energySlot.getSlots();
+                }
+
+                @Override
+                public ItemStack getStackInSlot(int slot) {
+                    return energySlot.getStackInSlot(slot);
+                }
+
+                @Override
+                public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
+                    if (!dev.anye.mc.basecore.energy.EnergySources.isEnergySource(stack)) return stack;
+                    return energySlot.insertItem(0, stack, simulate);
+                }
+
+                @Override
+                public ItemStack extractItem(int slot, int amount, boolean simulate) {
+                    return ItemStack.EMPTY;
+                }
+
+                @Override
+                public int getSlotLimit(int slot) {
+                    return energySlot.getSlotLimit(0);
+                }
+
+                @Override
+                public boolean isItemValid(int slot, ItemStack stack) {
+                    return dev.anye.mc.basecore.energy.EnergySources.isEnergySource(stack);
+                }
+            };
+        }
+        return energyInputHandler;
     }
 
     public void damage(int health) {
@@ -277,17 +343,22 @@ public class BaseCoreBlockEntity extends ToDamageBlockEntity<BasecoreModuleItem>
                 return;
             }
             // 能源：每 X tick 消耗 1 Rs，耗尽后基地停止工作
-            if (--energyTick <= 0) {
-                energyTick = getEnergyTicksPerUnit();
-                if (energy > 0) {
-                    energy--;
-                    super.setChanged();
+            // 可在配置 balance.energy_enabled 中整体关闭，关闭后视为永久供能
+            if (dev.anye.mc.basecore.config.BasecoreConfig.isEnergyEnabled()) {
+                if (--energyTick <= 0) {
+                    energyTick = getEnergyTicksPerUnit();
+                    if (energy > 0) {
+                        energy--;
+                        super.setChanged();
+                    }
                 }
-            }
-            energyPowered = energy > 0;
-            if (++refuelTick >= dev.anye.mc.basecore.config.BasecoreConfig.getEnergyRefuelTicks()) {
-                refuelTick = 0;
-                tryRefuelEnergy();
+                energyPowered = energy > 0;
+                if (++refuelTick >= dev.anye.mc.basecore.config.BasecoreConfig.getEnergyRefuelTicks()) {
+                    refuelTick = 0;
+                    tryRefuelEnergy();
+                }
+            } else {
+                energyPowered = true;
             }
             // 机械动力联动：需要足够转速与应力才能工作
             if (--rotationCheckTick <= 0) {
@@ -489,11 +560,14 @@ public class BaseCoreBlockEntity extends ToDamageBlockEntity<BasecoreModuleItem>
     public void loadAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
         loading = true;
         super.loadAdditional(pTag, pRegistries);
-        loading = false;
         if (pTag.hasUUID("owner")) owner = pTag.getUUID("owner");
         entityData.handle(pTag);
         energy = pTag.getInt("energy");
         energyPowered = energy > 0;
+        if (pTag.contains("energy_slot", net.minecraft.nbt.Tag.TAG_COMPOUND)) {
+            energySlot.deserializeNBT(pRegistries, pTag.getCompound("energy_slot"));
+        }
+        loading = false;
         itemChange();
         updateToClient();
     }
@@ -503,6 +577,7 @@ public class BaseCoreBlockEntity extends ToDamageBlockEntity<BasecoreModuleItem>
         super.saveAdditional(pTag, pRegistries);
         if (owner != null) pTag.putUUID("owner", owner);
         pTag.putInt("energy", energy);
+        pTag.put("energy_slot", energySlot.serializeNBT(pRegistries));
         entityData.saveToNbt(pTag);
     }
 

@@ -100,7 +100,8 @@
 
   "gui.basecore.basecore.interference": "Interference : %s",
   "gui.basecore.basecore.renamed": "§aBase renamed to %s",
-  "gui.basecore.energy": "Energy %s/%s Rs\nRefill with redstone (10 Rs) or block of redstone (90 Rs)",
+  "gui.basecore.energy": "Energy %s/%s Rs",
+  "gui.basecore.energy_hint": "Refill with redstone (10 Rs) or block of redstone (90 Rs)",
   "block.basecore.hash_chest": "Hash Chest",
   "block_entity.basecore.hash_chest": "Hash Chest",
   "block_entity.basecore.defend": "Defend",
@@ -159,5 +160,6 @@
   "error.basecore.cold_sweat.shutdown": "§bToo cold: the base core has completely shut down",
   "error.basecore.soviet_computer.incomplete": "§4Incomplete structure: place 1 electroluminescent display in any middle edge slot",
   "error.basecore.soviet_computer.broken": "§c%s malfunctioned: insert an electronic tube into its slots to repair it",
-  "error.basecore.soviet_computer.no_space": "§4Not enough space: a clear 3x3x3 area is required (controller sits at the bottom center)"
+  "error.basecore.soviet_computer.no_space": "§4Not enough space: a clear 3x3x3 area is required (controller sits at the bottom center)",
+  "error.basecore.soviet_computer.disabled": "§cThe Soviet base computer is disabled in the config"
 }

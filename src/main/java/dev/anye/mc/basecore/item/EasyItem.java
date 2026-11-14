@@ -13,6 +13,11 @@ public class EasyItem extends Item {
         super(new Properties().stacksTo(s).rarity(rarity));
     }
 
+    /** 供子类传入自定义 {@link Properties}（例如附加数据组件）。 */
+    protected EasyItem(Properties properties) {
+        super(properties);
+    }
+
     @Override
     public void appendHoverText(ItemStack pStack, TooltipContext pContext, List<Component> pTooltip, TooltipFlag pFlag) {
         if (shouldAddHoverDescription()) {

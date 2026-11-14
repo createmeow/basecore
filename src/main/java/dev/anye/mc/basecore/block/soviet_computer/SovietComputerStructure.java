@@ -219,6 +219,9 @@ public final class SovietComputerStructure {
             return InteractionResult.PASS;
         }
         BlockPos center = computer.getBlockPos();
+        if (!SovietComputerBlock.isEnabledForInteraction(serverPlayer)) {
+            return InteractionResult.FAIL;
+        }
         if (!isComplete(level, center)) {
             serverPlayer.sendSystemMessage(Component.translatable("error.basecore.soviet_computer.incomplete"));
             return InteractionResult.FAIL;
@@ -227,7 +230,7 @@ public final class SovietComputerStructure {
             serverPlayer.sendSystemMessage(Component.translatable("error.basecore.permission.right_click_block"));
             return InteractionResult.FAIL;
         }
-        serverPlayer.openMenu(computer, buf -> buf.writeBlockPos(center));
+        SovietComputerBlock.openGui(serverPlayer, computer, center);
         return InteractionResult.sidedSuccess(false);
     }
 

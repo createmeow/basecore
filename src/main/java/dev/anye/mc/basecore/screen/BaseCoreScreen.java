@@ -74,8 +74,10 @@ public class BaseCoreScreen extends AbstractContainerScreen<BaseCoreMenu> {
             BasecoreGuiTheme.slot(g, x + PLAYER_X + col * 18, y + HOTBAR_Y);
         }
 
-        BasecoreGuiTheme.energyBar(g, x + BAR_X, y + BAR_Y, BAR_W, BAR_H,
-                menu.getEnergy(), menu.getMaxEnergy());
+        if (dev.anye.mc.basecore.config.BasecoreConfig.isEnergyEnabled()) {
+            BasecoreGuiTheme.energyBar(g, x + BAR_X, y + BAR_Y, BAR_W, BAR_H,
+                    menu.getEnergy(), menu.getMaxEnergy());
+        }
     }
 
     @Override
@@ -95,11 +97,13 @@ public class BaseCoreScreen extends AbstractContainerScreen<BaseCoreMenu> {
                 TAB_MEMBERS_X + (TAB_W - this.font.width("成员管理")) / 2, labelY,
                 BasecoreGuiTheme.TAB_IDLE, false);
 
-        if (menu.getEnergy() <= 0) {
-            g.drawString(this.font, "能源不足", BAR_X + BAR_W + 4, BAR_Y - 1, 0xFFFF5555, false);
-        } else {
-            g.drawString(this.font, menu.getEnergy() + "/" + menu.getMaxEnergy(),
-                    BAR_X + BAR_W + 4, BAR_Y - 1, BasecoreGuiTheme.TEXT_DIM, false);
+        if (dev.anye.mc.basecore.config.BasecoreConfig.isEnergyEnabled()) {
+            if (menu.getEnergy() <= 0) {
+                g.drawString(this.font, "能源不足", BAR_X + BAR_W + 4, BAR_Y - 1, 0xFFFF5555, false);
+            } else {
+                g.drawString(this.font, menu.getEnergy() + "/" + menu.getMaxEnergy(),
+                        BAR_X + BAR_W + 4, BAR_Y - 1, BasecoreGuiTheme.TEXT_DIM, false);
+            }
         }
     }
 
@@ -109,9 +113,12 @@ public class BaseCoreScreen extends AbstractContainerScreen<BaseCoreMenu> {
 
         int barLeft = leftPos + BAR_X;
         int barTop = topPos + BAR_Y;
-        if (BasecoreGuiTheme.hover(barLeft - 1, barTop - 1, BAR_W + 2, BAR_H + 2, mouseX, mouseY)) {
-            g.renderTooltip(this.font, Component.translatable("gui.basecore.energy",
-                    menu.getEnergy(), menu.getMaxEnergy()), mouseX, mouseY);
+        if (dev.anye.mc.basecore.config.BasecoreConfig.isEnergyEnabled()
+                && BasecoreGuiTheme.hover(barLeft - 1, barTop - 1, BAR_W + 2, BAR_H + 2, mouseX, mouseY)) {
+            g.renderComponentTooltip(this.font, java.util.List.of(
+                            Component.translatable("gui.basecore.energy", menu.getEnergy(), menu.getMaxEnergy()),
+                            Component.translatable("gui.basecore.energy_hint")),
+                    mouseX, mouseY);
         }
         renderTooltip(g, mouseX, mouseY);
     }

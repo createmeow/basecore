@@ -62,15 +62,17 @@ public class SovietComputerScreen extends AbstractContainerScreen<SovietComputer
         drawTab(graphics, x + TAB_MODULES_X, y + TAB_Y, true);
         drawTab(graphics, x + TAB_MEMBERS_X, y + TAB_Y, false);
 
-        // 能源条（黑底黄条）
-        graphics.fill(x + BAR_X, y + BAR_Y, x + BAR_X + BAR_W, y + BAR_Y + BAR_H, 0xFF201C00);
-        int energy = this.menu.getEnergy();
-        int maxEnergy = this.menu.getMaxEnergy();
-        if (energy > 0 && maxEnergy > 0) {
-            int filled = Math.max(1, Math.min(BAR_W, (int) ((long) energy * BAR_W / maxEnergy)));
-            graphics.fill(x + BAR_X, y + BAR_Y, x + BAR_X + filled, y + BAR_Y + BAR_H, YELLOW);
+        // 能源条（黑底黄条）；配置关闭能源系统时隐藏
+        if (dev.anye.mc.basecore.config.BasecoreConfig.isEnergyEnabled()) {
+            graphics.fill(x + BAR_X, y + BAR_Y, x + BAR_X + BAR_W, y + BAR_Y + BAR_H, 0xFF201C00);
+            int energy = this.menu.getEnergy();
+            int maxEnergy = this.menu.getMaxEnergy();
+            if (energy > 0 && maxEnergy > 0) {
+                int filled = Math.max(1, Math.min(BAR_W, (int) ((long) energy * BAR_W / maxEnergy)));
+                graphics.fill(x + BAR_X, y + BAR_Y, x + BAR_X + filled, y + BAR_Y + BAR_H, YELLOW);
+            }
+            graphics.renderOutline(x + BAR_X, y + BAR_Y, BAR_W, BAR_H, YELLOW_DIM);
         }
-        graphics.renderOutline(x + BAR_X, y + BAR_Y, BAR_W, BAR_H, YELLOW_DIM);
     }
 
     /** 槽位不再画边框，只保留悬停时的黄色高亮。 */
@@ -87,22 +89,30 @@ public class SovietComputerScreen extends AbstractContainerScreen<SovietComputer
         drawTabLabel(graphics, TAB_MEMBERS_X, "成员管理", false);
 
         boolean broken = this.menu.isBroken();
-        boolean noEnergy = this.menu.getEnergy() <= 0;
+        boolean energyEnabled = dev.anye.mc.basecore.config.BasecoreConfig.isEnergyEnabled();
+        boolean noEnergy = energyEnabled && this.menu.getEnergy() <= 0;
         String line = this.menu.getHealth() + "/" + this.menu.getMaxHealth() + "  "
-                + (broken ? "[WARN] 故障 需电子管修复" : (noEnergy ? "能源不足" : "正常工作"));
+                + (broken ? "[WARN] 故障 需电子管修复" : (noEnergy ? "[WARN] 能源不足" : "正常工作"));
         graphics.drawString(this.font, line, 6, STATUS_Y, YELLOW, false);
 
-        graphics.drawString(this.font, this.menu.getEnergy() + "/" + this.menu.getMaxEnergy(),
-                BAR_X + BAR_W + 4, BAR_Y - 1, YELLOW_TEXT_DIM, false);
+        if (energyEnabled) {
+            graphics.drawString(this.font, this.menu.getEnergy() + "/" + this.menu.getMaxEnergy(),
+                    BAR_X + BAR_W + 4, BAR_Y - 1, YELLOW_TEXT_DIM, false);
+        }
     }
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         super.render(graphics, mouseX, mouseY, partialTick);
-        if (mouseX >= leftPos + BAR_X && mouseX < leftPos + BAR_X + BAR_W
+        if (dev.anye.mc.basecore.config.BasecoreConfig.isEnergyEnabled()
+                && mouseX >= leftPos + BAR_X && mouseX < leftPos + BAR_X + BAR_W
                 && mouseY >= topPos + BAR_Y && mouseY < topPos + BAR_Y + BAR_H) {
-            graphics.renderTooltip(this.font, Component.translatable("gui.basecore.energy",
-                    this.menu.getEnergy(), this.menu.getMaxEnergy()), mouseX, mouseY);
+            graphics.renderComponentTooltip(this.font, java.util.List.of(
+                            Component.translatable("gui.basecore.energy", this.menu.getEnergy(), this.menu.getMaxEnergy())
+                                    .withStyle(net.minecraft.ChatFormatting.YELLOW),
+                            Component.translatable("gui.basecore.energy_hint")
+                                    .withStyle(net.minecraft.ChatFormatting.YELLOW)),
+                    mouseX, mouseY);
         }
         renderTooltip(graphics, mouseX, mouseY);
     }

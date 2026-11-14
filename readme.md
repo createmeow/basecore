@@ -131,7 +131,11 @@ BaseCore 是一款面向 Minecraft 1.21.1（NeoForge）的基地建设与防御�
 
 ## 配置说明
 
-配置文件位于 `config/basecore.json`，启动游戏后自动生成。可调整项包括：
+配置文件位于 `config/basecore.json`，启动游戏后自动生成。修改后需重启游戏生效。
+
+> 完整的配置项说明见 [config.md](./config.md)。
+
+可调整项包括：
 
 | 配置项 | 说明 |
 |--------|------|

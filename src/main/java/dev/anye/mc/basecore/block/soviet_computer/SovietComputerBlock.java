@@ -69,6 +69,9 @@ public class SovietComputerBlock extends FunctionEntityBlock {
     @Override
     public InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (player instanceof ServerPlayer serverPlayer) {
+            if (!isEnabledForInteraction(serverPlayer)) {
+                return InteractionResult.FAIL;
+            }
             if (!(level.getBlockEntity(pos) instanceof SovietComputerBlockEntity computer)) {
                 return InteractionResult.FAIL;
             }
@@ -80,9 +83,46 @@ public class SovietComputerBlock extends FunctionEntityBlock {
                 serverPlayer.sendSystemMessage(Component.translatable("error.basecore.permission.right_click_block"));
                 return InteractionResult.FAIL;
             }
-            serverPlayer.openMenu(computer, buf -> buf.writeBlockPos(pos));
+            // 按当前玩法打开界面：组件玩法为零件升级页，模块玩法为原容器页
+            openGui(serverPlayer, computer, pos);
         }
         return InteractionResult.sidedSuccess(level.isClientSide);
+    }
+
+    /** 苏式计算机玩法是否启用；未启用时给玩家提示并返回 false。 */
+    public static boolean isEnabledForInteraction(ServerPlayer player) {
+        if (dev.anye.mc.basecore.config.BasecoreConfig.isSovietComputerEnabled()) return true;
+        player.sendSystemMessage(Component.translatable("error.basecore.soviet_computer.disabled"));
+        return false;
+    }
+
+    /**
+     * 按当前玩法打开苏式计算机界面：
+     * 组件模式 -> 零件升级界面（dev.anye.mc.basecore.menu.upgrade.BasecoreUpgradeMenu）；模块模式 -> 原容器界面。
+     * 控制器、外壳与显示器被右键时都走这里，保证三种位置行为一致。
+     */
+    public static void openGui(ServerPlayer serverPlayer, SovietComputerBlockEntity computer, BlockPos pos) {
+        if (dev.anye.mc.basecore.config.BasecoreConfig.isComponentMode()) {
+            serverPlayer.openMenu(new net.minecraft.world.MenuProvider() {
+                @Override
+                public Component getDisplayName() {
+                    return Component.translatable("block.basecore.soviet_computer");
+                }
+
+                @Override
+                public net.minecraft.world.inventory.AbstractContainerMenu createMenu(
+                        int containerId, net.minecraft.world.entity.player.Inventory inv,
+                        Player player) {
+                    return new dev.anye.mc.basecore.menu.upgrade.BasecoreUpgradeMenu(
+                            containerId, inv, computer, false);
+                }
+            }, buf -> {
+                buf.writeBlockPos(pos);
+                buf.writeBoolean(false);
+            });
+        } else {
+            serverPlayer.openMenu(computer, buf -> buf.writeBlockPos(pos));
+        }
     }
 
     /** 构造保留完整数据的掉落物（owner / 血量 / 范围 / 成员 / 电路 / 进度）。 */
